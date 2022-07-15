@@ -14,24 +14,56 @@
  * limitations under the License.
  */
 
-package org.devopology.metrics.exposition.plugin;
+package org.devopology.logger;
 
+/**
+ * Class to implement a Logger
+ */
 public class Logger {
 
     private String prefix;
 
-    public Logger(String prefix) {
+    /**
+     * Constructor
+     *
+     * @param prefix
+     */
+    Logger(String prefix) {
         this.prefix = prefix;
     }
 
+    /**
+     * Method to log an info message
+     *
+     * @param message
+     */
     public void info(String message) {
         log("INFO", message);
     }
 
+    /**
+     * Method to log a warning message
+     *
+     * @param message
+     */
+    public void warn(String message) {
+        log("WARN", message);
+    }
+
+    /**
+     * Method to log an error message
+     * @param message
+     */
     public void error(String message) {
         log("ERROR", message);
     }
 
+    /**
+     * Method to log a message
+     *
+     * @param level
+     * @param message
+     */
     private void log(String level, String message) {
         System.out.println(this.prefix + " " + level + " " + message);
     }
