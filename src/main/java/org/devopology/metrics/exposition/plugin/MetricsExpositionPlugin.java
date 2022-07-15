@@ -33,6 +33,9 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HeaderValues;
 import io.undertow.util.Headers;
+import org.devopology.configuration.Configuration;
+import org.devopology.logger.Logger;
+import org.devopology.logger.LoggerFactory;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -53,7 +56,8 @@ import java.util.Set;
  */
 public class MetricsExpositionPlugin {
 
-    private static final Logger LOGGER = new Logger("[metrics-exposition-plugin]");
+    private static final String LOGGER_PREFIX = "[metrics-exposition-plugin]";
+    private static final Logger LOGGER = LoggerFactory.getLogger(LOGGER_PREFIX);
 
     private static final String DEFAULT_SERVER_HOST = "0.0.0.0";
     private static final String DEFAULT_SERVER_SSL_KEYSTORE_TYPE = "PKCS12";
@@ -73,7 +77,7 @@ public class MetricsExpositionPlugin {
 
             Configuration configuration = new Configuration();
             configuration.load(map);
-            configuration.putIfAbsent(ConfigurationKey.SERVER_HOST, DEFAULT_SERVER_HOST);
+            configuration.setIfAbsent(Constant.SERVER_HOST_KEY, DEFAULT_SERVER_HOST);
 
             LOGGER.info("configuration properties:");
             Set<Map.Entry<String, String>> entrySet = configuration.asMap().entrySet();
@@ -94,10 +98,10 @@ public class MetricsExpositionPlugin {
                 throw e;
             }
 
-            File prometheusYamlFile = new File(configuration.getString(ConfigurationKey.PROMETHEUS_YAML));
-            validate(ConfigurationKey.PROMETHEUS_YAML, prometheusYamlFile);
+            File prometheusYamlFile = new File(configuration.getString(Constant.PROMETHEUS_YAML_KEY));
+            validate(Constant.PROMETHEUS_YAML_KEY, prometheusYamlFile);
 
-            Boolean defaultExportsEnabled = configuration.getBoolean(ConfigurationKey.DEFAULT_EXPORTERS_ENABLED, Boolean.TRUE);
+            Boolean defaultExportsEnabled = configuration.getBoolean(Constant.DEFAULT_EXPORTERS_ENABLED_KEY, Boolean.TRUE);
             if (defaultExportsEnabled) {
                 LOGGER.info("registering default exports...");
                 DefaultExports.initialize();
@@ -110,42 +114,39 @@ public class MetricsExpositionPlugin {
 
             Undertow.Builder undertowBuilder = Undertow.builder();
 
-            if (configuration.getBoolean(ConfigurationKey.SERVER_SSL_ENABLED)) {
+            if (configuration.getBoolean(Constant.SERVER_SSL_ENABLED_KEY)) {
                 LOGGER.info("initializing web server SSL/TLS...");
 
                 SSLContext sslContext = createSSLContext(configuration);
                 undertowBuilder.addHttpsListener(
-                        configuration.getInteger(ConfigurationKey.SERVER_PORT),
-                        configuration.getString(ConfigurationKey.SERVER_HOST),
+                        configuration.getInteger(Constant.SERVER_PORT_KEY),
+                        configuration.getString(Constant.SERVER_HOST_KEY),
                         sslContext);
             } else {
                 undertowBuilder.addHttpListener(
-                        configuration.getInteger(ConfigurationKey.SERVER_PORT),
-                        configuration.getString(ConfigurationKey.SERVER_HOST));
+                        configuration.getInteger(Constant.SERVER_PORT_KEY),
+                        configuration.getString(Constant.SERVER_HOST_KEY));
             }
 
             HttpHandler httpHandler = new DispatchingHttpHandler();
 
-            if (configuration.getBoolean(ConfigurationKey.SERVER_AUTHENTICATION_BASIC_ENABLED)) {
+            if (configuration.getBoolean(Constant.SERVER_AUTHENTICATION_BASIC_ENABLED_KEY)) {
                 LOGGER.info("initializing web server basic authentication...");
 
-                Map<String, char[]> userPasswordMap = new HashMap<>();
-
-                String username = configuration.getString(ConfigurationKey.SERVER_AUTHENTICATION_BASIC_USERNAME).trim();
-                String password = configuration.getString(ConfigurationKey.SERVER_AUTHENTICATION_BASIC_PASSWORD).trim();
-
+                String username = configuration.getString(Constant.SERVER_AUTHENTICATION_BASIC_USERNAME_KEY).trim();
+                String password = configuration.getString(Constant.SERVER_AUTHENTICATION_BASIC_PASSWORD_KEY).trim();
                 IdentityManager identityManager = new SimpleIdentityManager(username, password);
                 httpHandler = addSecurity(httpHandler, identityManager);
             }
 
             undertowBuilder.setHandler(httpHandler);
 
-            Integer workerThreads = configuration.getInteger(ConfigurationKey.SERVER_WORKER_THREADS);
+            Integer workerThreads = configuration.getInteger(Constant.SERVER_WORKER_THREADS_KEY);
             if (workerThreads != null) {
                 undertowBuilder.setWorkerThreads(workerThreads);
             }
 
-            Integer ioThreads = configuration.getInteger(ConfigurationKey.SERVER_IO_THREADS);
+            Integer ioThreads = configuration.getInteger(Constant.SERVER_IO_THREADS_KEY);
             if (ioThreads != null) {
                 undertowBuilder.setIoThreads(ioThreads);
             }
@@ -185,73 +186,73 @@ public class MetricsExpositionPlugin {
      */
     private void validate(Configuration configuration) {
         validate(
-                ConfigurationKey.SERVER_PORT,
-                configuration.getString(ConfigurationKey.SERVER_PORT));
+                Constant.SERVER_PORT_KEY,
+                configuration.getString(Constant.SERVER_PORT_KEY));
 
-        Integer serverPort = configuration.getInteger(ConfigurationKey.SERVER_PORT);
+        Integer serverPort = configuration.getInteger(Constant.SERVER_PORT_KEY);
 
-        validate(ConfigurationKey.SERVER_PORT, serverPort, 1, 65535);
-
-        validate(
-                ConfigurationKey.PROMETHEUS_YAML,
-                configuration.getString(ConfigurationKey.PROMETHEUS_YAML));
+        validate(Constant.SERVER_PORT_KEY, serverPort, 1, 65535);
 
         validate(
-                ConfigurationKey.SERVER_HOST,
-                configuration.getString(ConfigurationKey.SERVER_HOST));
+                Constant.PROMETHEUS_YAML_KEY,
+                configuration.getString(Constant.PROMETHEUS_YAML_KEY));
+
+        validate(
+                Constant.SERVER_HOST_KEY,
+                configuration.getString(Constant.SERVER_HOST_KEY));
 
         // TODO validate IP or hostname format
 
         // Optional
-        Integer workerThreads = configuration.getInteger(ConfigurationKey.SERVER_WORKER_THREADS);
+        Integer workerThreads = configuration.getInteger(Constant.SERVER_WORKER_THREADS_KEY);
 
         if (workerThreads != null) {
-            validate(ConfigurationKey.SERVER_WORKER_THREADS, workerThreads, 1, Integer.MAX_VALUE);
+            validate(Constant.SERVER_WORKER_THREADS_KEY, workerThreads, 1, Integer.MAX_VALUE);
         }
 
         // Optional
-        Integer ioThreads = configuration.getInteger(ConfigurationKey.SERVER_IO_THREADS);
+        Integer ioThreads = configuration.getInteger(Constant.SERVER_IO_THREADS_KEY);
 
         if (ioThreads != null) {
-            validate(ConfigurationKey.SERVER_IO_THREADS, ioThreads, 1, Integer.MAX_VALUE);
+            validate(Constant.SERVER_IO_THREADS_KEY, ioThreads, 1, Integer.MAX_VALUE);
         }
 
         Boolean basicAuthenticationEnabled =
-                configuration.getBoolean(ConfigurationKey.SERVER_AUTHENTICATION_BASIC_ENABLED, Boolean.FALSE);
+                configuration.getBoolean(Constant.SERVER_AUTHENTICATION_BASIC_ENABLED_KEY, Boolean.FALSE);
 
         if (basicAuthenticationEnabled) {
             validate(
-                    ConfigurationKey.SERVER_AUTHENTICATION_BASIC_USERNAME,
-                    configuration.getString(ConfigurationKey.SERVER_AUTHENTICATION_BASIC_USERNAME));
+                    Constant.SERVER_AUTHENTICATION_BASIC_USERNAME_KEY,
+                    configuration.getString(Constant.SERVER_AUTHENTICATION_BASIC_USERNAME_KEY));
 
             validate(
-                    ConfigurationKey.SERVER_AUTHENTICATION_BASIC_PASSWORD,
-                    configuration.getString(ConfigurationKey.SERVER_AUTHENTICATION_BASIC_PASSWORD));
+                    Constant.SERVER_AUTHENTICATION_BASIC_PASSWORD_KEY,
+                    configuration.getString(Constant.SERVER_AUTHENTICATION_BASIC_PASSWORD_KEY));
         }
 
         // Optional
-        Boolean sslEnabled = configuration.getBoolean(ConfigurationKey.SERVER_SSL_ENABLED);
+        Boolean sslEnabled = configuration.getBoolean(Constant.SERVER_SSL_ENABLED_KEY);
 
         if (sslEnabled) {
             validate(
-                    ConfigurationKey.SERVER_SSL_PROTOCOL,
-                    configuration.getString(ConfigurationKey.SERVER_SSL_PROTOCOL, DEFAULT_SERVER_SSL_PROTOCOL));
+                    Constant.SERVER_SSL_PROTOCOL_KEY,
+                    configuration.getString(Constant.SERVER_SSL_PROTOCOL_KEY, DEFAULT_SERVER_SSL_PROTOCOL));
 
             validate(
-                    ConfigurationKey.SERVER_SSL_KEYSTORE,
-                    configuration.getString(ConfigurationKey.SERVER_SSL_KEYSTORE));
+                    Constant.SERVER_SSL_KEYSTORE_KEY,
+                    configuration.getString(Constant.SERVER_SSL_KEYSTORE_KEY));
 
             validate(
-                    ConfigurationKey.SERVER_SSL_KEYSTORE_TYPE,
-                    configuration.getString(ConfigurationKey.SERVER_SSL_KEYSTORE_TYPE, DEFAULT_SERVER_SSL_KEYSTORE_TYPE));
+                    Constant.SERVER_SSL_KEYSTORE_TYPE_KEY,
+                    configuration.getString(Constant.SERVER_SSL_KEYSTORE_TYPE_KEY, DEFAULT_SERVER_SSL_KEYSTORE_TYPE));
 
             validate(
-                    ConfigurationKey.SERVER_SSL_KEYSTORE_PASSWORD,
-                    configuration.getString(ConfigurationKey.SERVER_SSL_KEYSTORE_PASSWORD));
+                    Constant.SERVER_SSL_KEYSTORE_PASSWORD_KEY,
+                    configuration.getString(Constant.SERVER_SSL_KEYSTORE_PASSWORD_KEY));
 
             validate(
-                    ConfigurationKey.SERVER_SSL_CERTIFICATE_ALIAS,
-                    configuration.getString(ConfigurationKey.SERVER_SSL_CERTIFICATE_ALIAS));
+                    Constant.SERVER_SSL_CERTIFICATE_ALIAS_KEY,
+                    configuration.getString(Constant.SERVER_SSL_CERTIFICATE_ALIAS_KEY));
         }
     }
 
@@ -291,16 +292,12 @@ public class MetricsExpositionPlugin {
     }
 
     /**
-     * Method to validate a File
+     * Method to validate a File is not null, exists, and can be read
      *
      * @param name
      * @param file
      */
     private void validate(String name, File file) {
-        if (file == null) {
-            throw new IllegalArgumentException("file [" + name + "] is null");
-        }
-
         if (file == null) {
             throw new IllegalArgumentException("file [" + name + "] = [" + file.getAbsolutePath() + "] is null");
         }
@@ -316,21 +313,21 @@ public class MetricsExpositionPlugin {
 
     private SSLContext createSSLContext(Configuration configuration) throws Exception {
         File keyStoreFile = new File(
-                configuration.getString(ConfigurationKey.SERVER_SSL_KEYSTORE)).getAbsoluteFile();
+                configuration.getString(Constant.SERVER_SSL_KEYSTORE_KEY)).getAbsoluteFile();
 
-        validate(ConfigurationKey.SERVER_SSL_KEYSTORE, keyStoreFile);
+        validate(Constant.SERVER_SSL_KEYSTORE_KEY, keyStoreFile);
 
-        String keyStorePassword = configuration.getString(ConfigurationKey.SERVER_SSL_KEYSTORE_PASSWORD);
-        validate(ConfigurationKey.SERVER_SSL_KEYSTORE_PASSWORD, keyStorePassword);
+        String keyStorePassword = configuration.getString(Constant.SERVER_SSL_KEYSTORE_PASSWORD_KEY);
+        validate(Constant.SERVER_SSL_KEYSTORE_PASSWORD_KEY, keyStorePassword);
 
-        String keyStoreType = configuration.getString(ConfigurationKey.SERVER_SSL_KEYSTORE_TYPE, DEFAULT_SERVER_SSL_KEYSTORE_TYPE);
-        validate(ConfigurationKey.SERVER_SSL_KEYSTORE_TYPE, keyStoreType);
+        String keyStoreType = configuration.getString(Constant.SERVER_SSL_KEYSTORE_TYPE_KEY, DEFAULT_SERVER_SSL_KEYSTORE_TYPE);
+        validate(Constant.SERVER_SSL_KEYSTORE_TYPE_KEY, keyStoreType);
 
-        String sslProtocol = configuration.getString(ConfigurationKey.SERVER_SSL_PROTOCOL);
-        validate(ConfigurationKey.SERVER_SSL_PROTOCOL, sslProtocol);
+        String sslProtocol = configuration.getString(Constant.SERVER_SSL_PROTOCOL_KEY);
+        validate(Constant.SERVER_SSL_PROTOCOL_KEY, sslProtocol);
 
-        String certificateAlias = configuration.getString(ConfigurationKey.SERVER_SSL_CERTIFICATE_ALIAS);
-        validate(ConfigurationKey.SERVER_SSL_CERTIFICATE_ALIAS, certificateAlias);
+        String certificateAlias = configuration.getString(Constant.SERVER_SSL_CERTIFICATE_ALIAS_KEY);
+        validate(Constant.SERVER_SSL_CERTIFICATE_ALIAS_KEY, certificateAlias);
 
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);
         keyStore.load(new FileInputStream(keyStoreFile), keyStorePassword.toCharArray());
@@ -346,7 +343,7 @@ public class MetricsExpositionPlugin {
         }
 
         if (!foundCertificate) {
-            throw new IllegalArgumentException("keystore [" + ConfigurationKey.SERVER_SSL_KEYSTORE + "] = [" + keyStoreFile.getAbsolutePath() + "] doesn't contain certificate");
+            throw new IllegalArgumentException("keystore [" + Constant.SERVER_SSL_KEYSTORE_KEY + "] = [" + keyStoreFile.getAbsolutePath() + "] doesn't contain certificate");
         }
 
         KeyManagerFactory keyManagerFactory =

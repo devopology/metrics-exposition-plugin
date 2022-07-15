@@ -33,25 +33,61 @@ public class SimpleIdentityManager implements IdentityManager {
 
     private SimpleAccount simpleAccount;
 
+    /**
+     * Constructor
+     *
+     * @param username
+     * @param password
+     */
     public SimpleIdentityManager(String username, String password) {
+        if (username == null) {
+            throw new IllegalArgumentException("username is null");
+        }
+        if (username.trim().isEmpty()) {
+            throw new IllegalArgumentException("username is empty");
+        }
+        if (password == null) {
+            throw new IllegalArgumentException("password is null");
+        }
+        if (password.trim().isEmpty()) {
+            throw new IllegalArgumentException("password is empty");
+        }
         this.simpleAccount = new SimpleAccount(username, password);
     }
 
+    /**
+     * Method to verify an Account
+     *
+     * @param account
+     * @return
+     */
     @Override
     public Account verify(Account account) {
         return account;
     }
 
+    /**
+     * Method to verify an id and Credential
+     *
+     * @param id
+     * @param credential
+     * @return
+     */
     @Override
-    public Account verify(String principal, Credential credential) {
+    public Account verify(String id, Credential credential) {
         if (credential instanceof PasswordCredential) {
             char[] password = ((PasswordCredential) credential).getPassword();
             return this.simpleAccount.verify(password);
         }
-
         return null;
     }
 
+    /**
+     * Method to verify a Credential
+     *
+     * @param credential
+     * @return
+     */
     @Override
     public Account verify(Credential credential) {
         return null;
