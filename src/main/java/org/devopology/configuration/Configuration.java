@@ -46,6 +46,7 @@ public class Configuration {
      * @return
      */
     public Configuration load(Map<String, String> map) {
+        checkNull(map, "map is null");
         Set<Map.Entry<String, String>> entrySet = map.entrySet();
         for (Map.Entry<String, String> entry : entrySet) {
             this.map.put(entry.getKey(), entry.getValue());
@@ -56,13 +57,14 @@ public class Configuration {
     /**
      * Method to a load a Properties file
      *
-     * @param properties
+     * @param file
      * @return Configuration
      * @throws IOException
      */
-    public Configuration load(File properties) throws IOException {
+    public Configuration load(File file) throws IOException {
+        checkNull(file, "file is null");
         Properties tempProperties = new Properties();
-        tempProperties.load(new FileReader(properties));
+        tempProperties.load(new FileReader(file));
         Set<Map.Entry<Object, Object>> entrySet = tempProperties.entrySet();
         for (Map.Entry<Object, Object> entry : entrySet) {
             set((String) entry.getKey(), (String) entry.getValue());
@@ -77,6 +79,7 @@ public class Configuration {
      * @return Configuration
      */
     public Configuration merge(Configuration configuration) {
+        checkNull(configuration, "configuration is null");
         load(configuration.map);
         return this;
     }
@@ -88,6 +91,7 @@ public class Configuration {
      * @return true if the key exists, false if the key doesn't exist
      */
     public boolean containsKey(String key) {
+        checkNull(key, "key is null");
         return this.map.containsKey(key);
     }
 
@@ -98,6 +102,7 @@ public class Configuration {
      * @return value if the key exists
      */
     public String removeKey(String key) {
+        checkNull(key, "key is null");
         return this.map.remove(key);
     }
 
@@ -109,6 +114,8 @@ public class Configuration {
      * @return Configuration
      */
     public Configuration set(String key, String value) {
+        checkNull(key, "key is null");
+        checkNull(value, "value is null");
         this.map.put(key, value);
         return this;
     }
@@ -121,10 +128,9 @@ public class Configuration {
      * @return Configuration
      */
     public Configuration set(String key, Integer value) {
-        if (value != null) {
-            return set(key, value.toString());
-        }
-        return null;
+        checkNull(key, "key is null");
+        checkNull(value, "value is null");
+        return set(key, value.toString());
     }
 
     /**
@@ -135,7 +141,9 @@ public class Configuration {
      * @return Configuration
      */
     public Configuration setIfAbsent(String key, String value) {
-        if ((value != null) && (!this.map.containsKey(key))) {
+        checkNull(key, "key is null");
+        checkNull(value, "value is null");
+        if (!this.map.containsKey(key)) {
             this.map.put(key, value);
         }
         return this;
@@ -149,7 +157,9 @@ public class Configuration {
      * @return Configuration
      */
     public Configuration setIfAbsent(String key, Integer value) {
-        if ((value != null) && (!this.map.containsKey(key))) {
+        checkNull(key, "key is null");
+        checkNull(value, "value is null");
+        if (!this.map.containsKey(key)) {
             this.map.put(key, value.toString());
         }
         return this;
@@ -162,6 +172,7 @@ public class Configuration {
      * @return String
      */
     public String getString(String key) {
+        checkNull(key, "key is null");
         return getString(key, null);
     }
 
@@ -173,6 +184,7 @@ public class Configuration {
      * @return String
      */
     public String getString(String key, String defaultValue) {
+        checkNull(key, "key is null");
         String result = this.map.get(key);
         if (result == null) {
             result = defaultValue;
@@ -189,6 +201,7 @@ public class Configuration {
      * @return Integer
      */
     public Integer getInteger(String key) {
+        checkNull(key, "key is null");
         return getInteger(key, null);
     }
 
@@ -202,6 +215,7 @@ public class Configuration {
      * @return
      */
     public Integer getInteger(String key, Integer defaultValue) {
+        checkNull(key, "key is null");
         Integer result = defaultValue;
         if (this.map.containsKey(key)) {
             try {
@@ -222,6 +236,7 @@ public class Configuration {
      * @return
      */
     public Boolean getBoolean(String key) {
+        checkNull(key, "key is null");
         return getBoolean(key, false);
     }
 
@@ -234,6 +249,7 @@ public class Configuration {
      * @return
      */
     public Boolean getBoolean(String key, boolean defaultValue) {
+        checkNull(key, "key is null");
         boolean result = defaultValue;
         if (this.map.containsKey(key)) {
             String value = getString(key, "false");
@@ -254,5 +270,11 @@ public class Configuration {
             map.put(entry.getKey(), entry.getValue());
         }
         return map;
+    }
+
+    private void checkNull(Object object, String message) {
+        if (object == null) {
+            throw new IllegalArgumentException(message);
+        }
     }
 }
