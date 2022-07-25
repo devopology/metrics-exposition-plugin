@@ -1,0 +1,52 @@
+exporter:
+  server:
+    host: 0.0.0.0
+    port: 12345
+    # optional
+    threads:
+      io: 10
+      worker: 11
+    caching:
+      enabled: false
+      # required if enabled is true
+      milliseconds: 10000
+    exports:
+      hotspot:
+        buffer-pools:
+          enabled: true
+        class-loading:
+          enabled: true
+        compilation:
+          enabled: true
+        garbage-collector:
+          enabled: true
+        memory-allocation:
+          enabled: true
+        memory-pools:
+          enabled: true
+        standard:
+          enabled: true
+        thread:
+          enabled: true
+        version-info:
+          enabled: true
+      jmx:
+        enabled: true
+        # required if enabled is true
+        filename: test-application/configuration/jmx-exporter.yml
+    authentication:
+      basic:
+        enabled: true
+        # required if enabled is true
+        username: test
+        password: kKagpEG3h82BvZQt/3c91164992fb7fc0787fe4088a4963b52f95e392
+    ssl:
+      enabled: true
+      # required if enabled is true
+      protocol: TLSv1.3
+      keystore:
+        filename: test-application/configuration/localhost.pkcs12
+        type: PKCS12
+        password: changeit
+      certificate:
+        alias: localhost
