@@ -18,18 +18,22 @@ package org.devopology.common.converter;
 
 import org.devopology.common.precondition.Precondition;
 
-import java.util.Map;
-
-public class MapConverter implements Converter<Map<String, Object>> {
+public class ShortConverter implements Converter<Integer> {
 
     @Override
-    public Map<String, Object> convert(Object object) throws ConverterException {
+    public Short convert(Object object) throws ConverterException {
         Precondition.notNull(object, "object is null");
 
-        if (Map.class.isInstance(object)) {
-            return (Map<String, Object>) object;
+        if (String.class.isInstance(object)) {
+            String string = (String) object;
+
+            try {
+                return Short.parseShort(string);
+            } catch (NumberFormatException e) {
+                throw new ConverterException(String.format("object value [%s] can't be converted to an Integer", string));
+            }
         }
 
-        throw new ConverterException(String.format("object class [%s] isn't a Map<String, Object>", object.getClass()));
+        throw new ConverterException(String.format("object class [%s] isn't a String", object.getClass()));
     }
 }

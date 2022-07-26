@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package org.devopology.metrics.exporter.common.sha;
+package org.devopology.common.sha1;
 
-import org.devopology.common.sha1.SHA1;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SHA1Test {
 

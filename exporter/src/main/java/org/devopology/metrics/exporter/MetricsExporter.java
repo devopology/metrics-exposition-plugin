@@ -28,6 +28,7 @@ import io.prometheus.client.hotspot.ThreadExports;
 import io.prometheus.client.hotspot.VersionInfoExports;
 import io.prometheus.jmx.JmxCollector;
 import io.undertow.Undertow;
+import io.undertow.UndertowOptions;
 import io.undertow.security.api.AuthenticationMechanism;
 import io.undertow.security.api.AuthenticationMode;
 import io.undertow.security.handlers.AuthenticationCallHandler;
@@ -101,6 +102,7 @@ public class MetricsExporter {
             }
 
             Undertow.Builder undertowBuilder = Undertow.builder();
+            undertowBuilder.setServerOption(UndertowOptions.ENABLE_HTTP2, true);
 
             // TODO if server host is a validate domain name, but unknown Undertow will throw an exception
 

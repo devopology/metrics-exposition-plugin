@@ -6,7 +6,7 @@
     <parent>
         <artifactId>metrics-exporter-parent</artifactId>
         <groupId>org.devopology</groupId>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -41,13 +41,6 @@
     </build>
 
     <dependencies>
-        <!--
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-nop</artifactId>
-            <version>1.7.36</version>
-        </dependency>
-        -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
