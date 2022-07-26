@@ -169,6 +169,25 @@ __NOTES__
 - username is `test`
 - password is `password`
 
+## Contributing
+
+The project uses a modified Github Flow branching model
+
+- branch `main` contains the latest release
+- branch `develop` contains the next release
+
+__PRs__
+
+- fork the repository
+- create a branch *or work off of your `develop` branch)
+- make your changes, test, etc.
+- squash your commits
+- create a PR targeting the upstream `develop` branch
+
+## Releases
+
+Releases are created via PR from the upstream `develop` branch to the upstream `main` branch
+
 ## References
 
 - [https://github.com/prometheus/client_java](https://github.com/prometheus/client_java)
