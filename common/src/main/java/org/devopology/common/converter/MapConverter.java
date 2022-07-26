@@ -18,24 +18,19 @@ package org.devopology.common.converter;
 
 import org.devopology.common.precondition.Precondition;
 
-import java.math.BigInteger;
+import java.util.List;
+import java.util.Map;
 
-public class BigIntegerConverter implements Converter<BigInteger> {
+public class MapConverter implements Converter<Map<String, Object>> {
 
     @Override
-    public BigInteger convert(Object object) throws ConverterException {
+    public Map<String, Object> convert(Object object) throws ConverterException {
         Precondition.notNull(object, "object is null");
 
-        if (String.class.isInstance(object)) {
-            String string = (String) object;
-
-            try {
-                return new BigInteger(string);
-            } catch (NumberFormatException e) {
-                throw new ConverterException(String.format("object value [%s] value can't be converted to a BigInteger", string));
-            }
+        if (Map.class.isInstance(object)) {
+            return (Map<String, Object>) object;
         }
 
-        throw new ConverterException(String.format("object class [%s] isn't a String", object.getClass()));
+        throw new ConverterException(String.format("object class [%s] isn't a Map<String, Object>", object.getClass()));
     }
 }

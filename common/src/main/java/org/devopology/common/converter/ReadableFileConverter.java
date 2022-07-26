@@ -17,7 +17,6 @@
 package org.devopology.common.converter;
 
 import org.devopology.common.precondition.Precondition;
-import org.devopology.common.type.Type;
 
 import java.io.File;
 
@@ -26,37 +25,28 @@ import java.io.File;
  */
 public class ReadableFileConverter implements Converter<File> {
 
-    public File convert(Object value, Required required, String description) throws ConverterException {
-        Precondition.notNull(description, "description is null");
-        Precondition.notEmpty(description, "description is empty");
+    public File convert(Object object) throws ConverterException {
+        Precondition.notNull(object, "object is null");
 
-        if (value == null) {
-            if (required == Converter.Required.TRUE) {
-                throw new ConverterException(String.format("%s is null", description));
-            } else {
-                return null;
-            }
-        }
-
-        if (Type.isType(String.class, value)) {
-            String string = (String) value;
+        if (String.class.isInstance(object)) {
+            String string = (String) object;
             File file = new File(string);
 
             if (!file.exists()) {
-                throw new ConverterException(String.format("%s = [%s] file doesn't exist", description, value));
+                throw new ConverterException(String.format("object value [%s] doesn't exist", string));
             }
 
             if (!file.isFile()) {
-                throw new ConverterException(String.format("%s = [%s] isn't a file", description, value));
+                throw new ConverterException(String.format("object value [%s] isn't a File", string));
             }
 
             if (!file.canRead()) {
-                throw new ConverterException(String.format("%s = [%s] file isn't a readable", description, value));
+                throw new ConverterException(String.format("object value [%s] isn't a readable File", string));
             }
 
             return file;
         }
 
-        throw new ConverterException(String.format("path [%s] = [%s] isn't a string", description, value));
+        throw new ConverterException(String.format("object class [%s] isn't a String", object.getClass()));
     }
 }

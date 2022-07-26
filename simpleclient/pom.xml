@@ -6,13 +6,13 @@
     <parent>
         <artifactId>metrics-exporter-parent</artifactId>
         <groupId>org.devopology</groupId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>simpleclient</artifactId>
-    <version>${prometheus.simpleclient.version}</version>
+    <version>0.16.0</version>
 
     <build>
         <plugins>
@@ -24,7 +24,7 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
-                    <finalName>simpleclient-${prometheus.simpleclient.version}</finalName>
+                    <finalName>simpleclient-0.16.0</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
@@ -44,7 +44,7 @@
         <dependency>
             <groupId>io.prometheus</groupId>
             <artifactId>simpleclient</artifactId>
-            <version>${prometheus.simpleclient.version}</version>
+            <version>0.16.0</version>
         </dependency>
     </dependencies>
 

@@ -28,8 +28,8 @@ public interface Converter<T> {
     StringConverter STRING = new StringConverter();
     HostOrIPAddressConverter HOST_OR_IP_ADDRESS = new HostOrIPAddressConverter();
     ReadableFileConverter READABLE_FILE = new ReadableFileConverter();
+    ListConverter LIST_CONVERTER = new ListConverter();
+    MapConverter MAP_CONVERTER = new MapConverter();
 
-    enum Required { TRUE, FALSE };
-
-    <T> T convert(Object value, Required required, String descrption) throws ConverterException;
+    <T> T convert(Object value) throws ConverterException;
 }

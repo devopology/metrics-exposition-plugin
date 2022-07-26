@@ -17,33 +17,23 @@
 package org.devopology.common.converter;
 
 import org.devopology.common.precondition.Precondition;
-import org.devopology.common.type.Type;
 
 public class IntegerConverter implements Converter<Integer> {
 
     @Override
-    public Integer convert(Object value, Required required, String description) throws ConverterException {
-        Precondition.notNull(description, "description is null");
-        Precondition.notEmpty(description, "description is empty");
+    public Integer convert(Object object) throws ConverterException {
+        Precondition.notNull(object, "object is null");
 
-        if (value == null) {
-            if (required == Converter.Required.TRUE) {
-                throw new ConverterException(String.format("%s is null", description));
-            } else {
-                return null;
-            }
-        }
-
-        if (Type.isType(String.class, value)) {
-            String string = (String) value;
+        if (String.class.isInstance(object)) {
+            String string = (String) object;
 
             try {
                 return Integer.parseInt(string);
             } catch (NumberFormatException e) {
-                throw new ConverterException(String.format("%s = [%s] value can't be converted to an integer", description, string));
+                throw new ConverterException(String.format("object value [%s] can't be converted to an Integer", string));
             }
         }
 
-        throw new ConverterException(String.format("%s = [%s] isn't a string", description, value));
+        throw new ConverterException(String.format("object class [%s] isn't a String", object.getClass()));
     }
 }

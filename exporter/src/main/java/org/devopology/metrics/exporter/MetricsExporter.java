@@ -151,6 +151,7 @@ public class MetricsExporter {
                     throw new ConfigurationException(String.format("io threads must be greater >= %d", 1));
                 }
 
+                LOGGER.info("IO threads = " + ioThreads);
                 undertowBuilder.setIoThreads(ioThreads);
             }
 
@@ -160,6 +161,7 @@ public class MetricsExporter {
                     throw new ConfigurationException(String.format("worked threads must be greater >= %d", 1));
                 }
 
+                LOGGER.info("worker threads = " + workerThreads);
                 undertowBuilder.setWorkerThreads(workerThreads);
             }
 
@@ -281,6 +283,7 @@ public class MetricsExporter {
             LOGGER.info("exiting");
             System.exit(1);
         } catch (Exception e) {
+            e.printStackTrace();
             LOGGER.error("generic error");
             LOGGER.error(e.getMessage());
 

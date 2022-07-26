@@ -17,33 +17,23 @@
 package org.devopology.common.converter;
 
 import org.devopology.common.precondition.Precondition;
-import org.devopology.common.type.Type;
 
 public class DoubleConverter implements Converter<Double> {
 
     @Override
-    public Double convert(Object value, Required required, String description) throws ConverterException {
-        Precondition.notNull(description, "description is null");
-        Precondition.notEmpty(description, "description is empty");
+    public Double convert(Object object) throws ConverterException {
+        Precondition.notNull(object, "object is null");
 
-        if (value == null) {
-            if (required == Required.TRUE) {
-                throw new ConverterException(String.format("%s is null", description));
-            } else {
-                return null;
-            }
-        }
-
-        if (Type.isType(String.class, value)) {
-            String string = (String) value;
+        if (String.class.isInstance(object)) {
+            String string = (String) object;
 
             try {
                 return Double.parseDouble(string);
             } catch (NumberFormatException e) {
-                throw new ConverterException(String.format("%s = [%s] value can't be converted to a double", description, string));
+                throw new ConverterException(String.format("object value [%s] can't be converted to a Double", string));
             }
         }
 
-        throw new ConverterException(String.format("%s = [%s] isn't a string", description, value));
+        throw new ConverterException(String.format("object class [%s] isn't a String", object.getClass()));
     }
 }

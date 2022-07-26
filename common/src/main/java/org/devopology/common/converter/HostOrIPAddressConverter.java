@@ -19,25 +19,15 @@ package org.devopology.common.converter;
 import com.google.common.net.InetAddresses;
 import com.google.common.net.InternetDomainName;
 import org.devopology.common.precondition.Precondition;
-import org.devopology.common.type.Type;
 
 public class HostOrIPAddressConverter extends StringConverter {
 
     @Override
-    public String convert(Object value, Converter.Required required, String description) throws ConverterException {
-        Precondition.notNull(description, "description is null");
-        Precondition.notEmpty(description, "description is empty");
+    public String convert(Object object) throws ConverterException {
+        Precondition.notNull(object, "object is null");
 
-        if (value == null) {
-            if (required == Converter.Required.TRUE) {
-                throw new ConverterException(String.format("%s is null", description));
-            } else {
-                return null;
-            }
-        }
-
-        if (Type.isType(String.class, value)) {
-            String string = (String) value;
+        if (String.class.isInstance(object)) {
+            String string = (String) object;
             boolean valid = false;
 
             if (InetAddresses.isInetAddress(string)) {
@@ -50,10 +40,9 @@ public class HostOrIPAddressConverter extends StringConverter {
                 return string;
             }
 
-            throw new ConverterException(String.format("path [%s] = [%s] value isn't a domain name or IP address", description, string));
-
+            throw new ConverterException(String.format("object value [%s] isn't a domain name or IP address", string));
         }
 
-        throw new ConverterException(String.format("path [%s] = [%s] isn't a String", description, value));
+        throw new ConverterException(String.format("object class [%s] isn't a String", object.getClass()));
     }
 }
