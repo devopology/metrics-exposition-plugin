@@ -186,7 +186,7 @@ __PRs__
 
 ## Releases
 
-Releases are created via PR from the upstream `develop` branch to the upstream `main` branch
+Releases are created via a PR from the upstream `develop` branch to the upstream `main` branch
 
 ## References
 
