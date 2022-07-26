@@ -17,25 +17,15 @@
 package org.devopology.common.converter;
 
 import org.devopology.common.precondition.Precondition;
-import org.devopology.common.type.Type;
 
 public class BooleanConverter implements Converter<String> {
 
     @Override
-    public Boolean convert(Object value, Required required, String description) throws ConverterException {
-        Precondition.notNull(description, "description is null");
-        Precondition.notEmpty(description, "description is empty");
+    public Boolean convert(Object object) throws ConverterException {
+        Precondition.notNull(object, "object is null");
 
-        if (value == null) {
-            if (required == Converter.Required.TRUE) {
-                throw new ConverterException(String.format("%s is null", description));
-            } else {
-                return Boolean.FALSE;
-            }
-        }
-
-        if (Type.isType(String.class, value)) {
-            String string = (String) value;
+        if (String.class.isInstance(object)) {
+            String string = (String) object;
 
             if ("true".equals(string)) {
                 return Boolean.TRUE;
@@ -43,9 +33,9 @@ public class BooleanConverter implements Converter<String> {
                 return Boolean.FALSE;
             }
 
-            throw new ConverterException(String.format("%s = [%s] value isn't 'true' or 'false'", description, value));
+            throw new ConverterException(String.format("object value [%s] value isn't 'true' or 'false'", object));
         }
 
-        throw new ConverterException(String.format("%s = [%s] isn't a string", description, value));
+        throw new ConverterException(String.format("object class [%s] isn't a String", object.getClass()));
     }
 }

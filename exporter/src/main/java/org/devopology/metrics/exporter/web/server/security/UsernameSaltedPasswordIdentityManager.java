@@ -36,7 +36,7 @@ public class UsernameSaltedPasswordIdentityManager implements IdentityManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UsernameSaltedPasswordIdentityManager.class);
 
-    private final static Set<String> ROLES = new HashSet<>();
+    private static final Set<String> ROLES = new HashSet<>();
 
     private String username;
     private String saltedPassword;

@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-package org.devopology.common.converter;
+package org.devopology.common.yamlpath;
 
-import org.devopology.common.precondition.Precondition;
+public class PathNotFoundException extends Exception {
 
-public class StringConverter implements Converter<String> {
+    private String path;
 
-    @Override
-    public String convert(Object object) throws ConverterException {
-        Precondition.notNull(object, "object is null");
+    public PathNotFoundException(String path, String message) {
+        super(message);
+        this.path = path;
+    }
 
-        if (String.class.isInstance(object)) {
-            return (String) object;
-        }
+    public PathNotFoundException(String path, String message, Throwable throwable) {
+        super(message, throwable);
+        this.path = path;
+    }
 
-        throw new ConverterException(String.format("object class [%s] isn't a String", object.getClass()));
+    public String getPath() {
+        return path;
     }
 }

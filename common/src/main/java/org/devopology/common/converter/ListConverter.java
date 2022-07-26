@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-package org.devopology.common.resolver;
+package org.devopology.common.converter;
 
-public class ResolverException extends Exception {
+import org.devopology.common.precondition.Precondition;
 
-    public ResolverException(String message) {
-        super(message);
-    }
+import java.util.List;
 
-    public ResolverException(String message, Throwable throwable) {
-        super(message, throwable);
+public class ListConverter implements Converter<List<Object>> {
+
+    @Override
+    public List<Object> convert(Object object) throws ConverterException {
+        Precondition.notNull(object, "object is null");
+
+        if (List.class.isInstance(object)) {
+            return (List<Object>) object;
+        }
+
+        throw new ConverterException(String.format("object class [%s] isn't a List<Object>", object.getClass()));
     }
 }

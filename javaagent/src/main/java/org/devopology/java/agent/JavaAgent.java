@@ -55,6 +55,8 @@ public class JavaAgent {
             LOGGER.info("starting");
             LOGGER.info("argument = [" + argument + "]");
 
+            LOGGER.info("Java version " + System.getProperty("java.version"));
+
             if (argument == null) {
                 throw new IllegalArgumentException("argument is null");
             }

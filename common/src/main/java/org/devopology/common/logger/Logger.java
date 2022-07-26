@@ -68,5 +68,6 @@ public class Logger {
      */
     private void log(String level, String message) {
         System.out.println(String.format(LOG_FORMAT, Thread.currentThread().getName(), level, this.prefix, message));
+        System.out.flush();
     }
 }

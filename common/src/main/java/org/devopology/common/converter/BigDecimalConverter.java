@@ -17,35 +17,25 @@
 package org.devopology.common.converter;
 
 import org.devopology.common.precondition.Precondition;
-import org.devopology.common.type.Type;
 
 import java.math.BigDecimal;
 
 public class BigDecimalConverter implements Converter<BigDecimal> {
 
     @Override
-    public BigDecimal convert(Object value, Required required, String description) throws ConverterException {
-        Precondition.notNull(description, "description is null");
-        Precondition.notEmpty(description, "description is empty");
+    public BigDecimal convert(Object object) throws ConverterException {
+        Precondition.notNull(object, "value is null");
 
-        if (value == null) {
-            if (required == Required.TRUE) {
-                throw new ConverterException(String.format("%s is null", description));
-            } else {
-                return null;
-            }
-        }
-
-        if (Type.isType(String.class, value)) {
-            String string = (String) value;
+        if (String.class.isInstance(object)) {
+            String string = (String) object;
 
             try {
                 return new BigDecimal(string);
             } catch (NumberFormatException e) {
-                throw new ConverterException(String.format("%s = [%s] value can't be converted to a BigDecimal", description, string));
+                throw new ConverterException(String.format("object value [%s] cant' be converted to a BigDecimal", string));
             }
         }
 
-        throw new ConverterException(String.format("%s = [%s] isn't a string", description, value));
+        throw new ConverterException(String.format("object class [%s] isn't a String", object.getClass()));
     }
 }

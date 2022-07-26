@@ -4,8 +4,8 @@ exporter:
     port: 12345
     # optional
     threads:
-      io: 10
-      worker: 11
+      io: 4 # number of cores
+      worker: 10
     caching:
       enabled: false
       # required if enabled is true
