@@ -101,7 +101,7 @@ __NOTES:__
 - double quotes are required around the arguments
 - `/opt/metrics-exporter` should __NOT__ be in your classpath
 - if your application bundles the `simpleclient` library, your application's version will be used
-- paths in the `exporter.yml` configuration file need to be edited to match your paths, ports, etc.
+- values in the `exporter.yml` configuration file need to be edited to match your paths, ports, etc.
 
 ## Configuration
 
