@@ -26,6 +26,7 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
+import org.yaml.snakeyaml.resolver.Resolver;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -36,6 +37,11 @@ import java.util.Map;
  * Class to implement YamlPath access. Similar to JsonPath
  */
 public class YamlPath {
+
+    private static final String PATH_IS_EMPTY = "path is empty";
+    private static final String PATH_IS_NULL = "path is null";
+    private static final String READER_IS_NULL = "reader is null";
+    private static final String PATH_NOT_FOUND = "path [%s] not found";
 
     private DocumentContext documentContext;
 
@@ -67,14 +73,16 @@ public class YamlPath {
      * @throws PathNotFoundException
      */
     public Object read(String path, boolean isRequired) throws PathNotFoundException {
-        Precondition.notNull(path, "path is null");
-        Precondition.notEmpty(path, "path is empty");
+        Precondition.notNull(path, PATH_IS_NULL);
+        Precondition.notEmpty(path, PATH_IS_EMPTY);
+
+        path = path.trim();
 
         try {
             return this.documentContext.read(path);
         } catch (com.jayway.jsonpath.PathNotFoundException e) {
             if (isRequired) {
-                throw new PathNotFoundException(path, String.format("path [%s] not found", path));
+                throw new PathNotFoundException(path, String.format(PATH_NOT_FOUND, path));
             }
         }
 
@@ -87,13 +95,18 @@ public class YamlPath {
      * @throws IOException
      */
     public static YamlPath parse(Reader reader) throws IOException {
-        // Create a Yaml object that loads values (String, Integer, Boolean, timestamp) as Strings
-        Yaml yaml = new Yaml(new Constructor(), new Representer(), new DumperOptions(), new LoaderOptions(), new org.yaml.snakeyaml.resolver.Resolver() {
+        Precondition.notNull(reader, READER_IS_NULL);
+
+        Resolver resolver = new Resolver() {
             protected void addImplicitResolvers() {
                 this.addImplicitResolver(Tag.MERGE, MERGE, "<");
                 this.addImplicitResolver(Tag.YAML, YAML, "!&*");
             }
-        });
+        };
+
+        // Create a Yaml object that loads values (String, Integer, Boolean, timestamp) as Strings
+        Yaml yaml = new Yaml(
+                new Constructor(), new Representer(), new DumperOptions(), new LoaderOptions(), resolver);
 
         // Load the YAML file
         Map<String, Object> yamlMap = yaml.load(reader);

@@ -4,6 +4,7 @@ import org.devopology.common.converter.Converter;
 import org.devopology.common.converter.ConverterException;
 import org.devopology.common.logger.Logger;
 import org.devopology.common.logger.LoggerFactory;
+import org.devopology.common.precondition.Precondition;
 import org.devopology.common.yamlpath.YamlPath;
 import org.devopology.common.yamlpath.PathNotFoundException;
 
@@ -19,6 +20,12 @@ public class Configuration {
     private static final int OBJECT_NULL_AND_REQUIRED = 1;
     private static final int OBJECT_NULL_AND_NOT_REQUIRED = 2;
 
+    private static final String PATH_IS_NULL = "path is null";
+    private static final String PATH_IS_EMPTY = "path is empty";
+    private static final String PATH_VALUE_IS_REQUIRED = "path [%s] value is required";
+    private static final String READER_IS_NULL = "reader is null";
+    private static final String NO_DATA_LOADED = "no data";
+
     private YamlPath yamlPath;
 
     public Configuration() {
@@ -26,6 +33,7 @@ public class Configuration {
     }
 
     public void load(Reader reader) throws IOException {
+        Precondition.notNull(reader, READER_IS_NULL);
         this.yamlPath = YamlPath.parse(reader);
     }
 
@@ -34,6 +42,12 @@ public class Configuration {
     }
 
     public Boolean getBoolean(String path, boolean isRequired) throws ConfigurationException {
+        Precondition.notNull(path, PATH_IS_NULL);
+        Precondition.notEmpty(path, PATH_IS_EMPTY);
+        Precondition.checkState(this.yamlPath != null, NO_DATA_LOADED);
+
+        path = path.trim();
+
         try {
             Object object = yamlPath.read(path, isRequired);
             int state = state(object, isRequired);
@@ -42,7 +56,7 @@ public class Configuration {
                     return Converter.BOOLEAN.convert(object);
                 }
                 case OBJECT_NULL_AND_REQUIRED: {
-                    throw new ConfigurationException(String.format("path [%2] value is required", path));
+                    throw new ConfigurationException(String.format(PATH_VALUE_IS_REQUIRED, path));
                 }
                 case OBJECT_NULL_AND_NOT_REQUIRED: {
                     return Boolean.FALSE;
@@ -64,6 +78,12 @@ public class Configuration {
     }
 
     public Integer getInteger(String path, boolean isRequired) throws ConfigurationException {
+        Precondition.notNull(path, PATH_IS_NULL);
+        Precondition.notEmpty(path, PATH_IS_EMPTY);
+        Precondition.checkState(this.yamlPath != null, NO_DATA_LOADED);
+
+        path = path.trim();
+
         try {
             Object object = yamlPath.read(path, isRequired);
             int state = state(object, isRequired);
@@ -72,7 +92,7 @@ public class Configuration {
                     return Converter.INTEGER.convert(object);
                 }
                 case OBJECT_NULL_AND_REQUIRED: {
-                    throw new ConfigurationException(String.format("path [%2] value is required", path));
+                    throw new ConfigurationException(String.format(PATH_VALUE_IS_REQUIRED, path));
                 }
                 case OBJECT_NULL_AND_NOT_REQUIRED: {
                     return null;
@@ -94,6 +114,12 @@ public class Configuration {
     }
 
     public Long getLong(String path, boolean isRequired) throws ConfigurationException {
+        Precondition.notNull(path, PATH_IS_NULL);
+        Precondition.notEmpty(path, PATH_IS_EMPTY);
+        Precondition.checkState(this.yamlPath != null, NO_DATA_LOADED);
+
+        path = path.trim();
+
         try {
             Object object = yamlPath.read(path, isRequired);
             int state = state(object, isRequired);
@@ -102,7 +128,7 @@ public class Configuration {
                     return Converter.LONG.convert(object);
                 }
                 case OBJECT_NULL_AND_REQUIRED: {
-                    throw new ConfigurationException(String.format("path [%2] value is required", path));
+                    throw new ConfigurationException(String.format(PATH_VALUE_IS_REQUIRED, path));
                 }
                 case OBJECT_NULL_AND_NOT_REQUIRED: {
                     return null;
@@ -124,6 +150,12 @@ public class Configuration {
     }
 
     public String getString(String path, boolean isRequired) throws ConfigurationException {
+        Precondition.notNull(path, PATH_IS_NULL);
+        Precondition.notEmpty(path, PATH_IS_EMPTY);
+        Precondition.checkState(this.yamlPath != null, NO_DATA_LOADED);
+
+        path = path.trim();
+
         try {
             Object object = yamlPath.read(path, isRequired);
             int state = state(object, isRequired);
@@ -132,7 +164,7 @@ public class Configuration {
                     return Converter.STRING.convert(object);
                 }
                 case OBJECT_NULL_AND_REQUIRED: {
-                    throw new ConfigurationException(String.format("path [%2] value is required", path));
+                    throw new ConfigurationException(String.format(PATH_VALUE_IS_REQUIRED, path));
                 }
                 case OBJECT_NULL_AND_NOT_REQUIRED: {
                     return null;
@@ -154,6 +186,12 @@ public class Configuration {
     }
 
     public String getHostOrIPAddress(String path, boolean isRequired) throws ConfigurationException {
+        Precondition.notNull(path, PATH_IS_NULL);
+        Precondition.notEmpty(path, PATH_IS_EMPTY);
+        Precondition.checkState(this.yamlPath != null, NO_DATA_LOADED);
+
+        path = path.trim();
+
         try {
             Object object = yamlPath.read(path, isRequired);
             int state = state(object, isRequired);
@@ -162,7 +200,7 @@ public class Configuration {
                     return Converter.STRING.convert(object);
                 }
                 case OBJECT_NULL_AND_REQUIRED: {
-                    throw new ConfigurationException(String.format("path [%2] value is required", path));
+                    throw new ConfigurationException(String.format(PATH_VALUE_IS_REQUIRED, path));
                 }
                 case OBJECT_NULL_AND_NOT_REQUIRED: {
                     return null;
@@ -184,6 +222,12 @@ public class Configuration {
     }
 
     public File getReadableFile(String path, boolean isRequired) throws ConfigurationException {
+        Precondition.notNull(path, PATH_IS_NULL);
+        Precondition.notEmpty(path, PATH_IS_EMPTY);
+        Precondition.checkState(this.yamlPath != null, NO_DATA_LOADED);
+
+        path = path.trim();
+
         try {
             Object object = yamlPath.read(path, isRequired);
             int state = state(object, isRequired);
@@ -192,7 +236,7 @@ public class Configuration {
                     return Converter.READABLE_FILE.convert(object);
                 }
                 case OBJECT_NULL_AND_REQUIRED: {
-                    throw new ConfigurationException(String.format("path [%2] value is required", path));
+                    throw new ConfigurationException(String.format(PATH_VALUE_IS_REQUIRED, path));
                 }
                 case OBJECT_NULL_AND_NOT_REQUIRED: {
                     return null;

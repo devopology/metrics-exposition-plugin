@@ -19,6 +19,7 @@ package org.devopology.common.converter;
 public interface Converter<T> {
 
     BooleanConverter BOOLEAN = new BooleanConverter();
+    ShortConverter SHORT = new ShortConverter();
     IntegerConverter INTEGER = new IntegerConverter();
     LongConverter LONG = new LongConverter();
     FloatConverter FLOAT = new FloatConverter();

@@ -6,6 +6,7 @@ Project to expose JMX and / or Prometheus metrics in a Prometheus or OpenMetrics
 
 - 100% Java compliant
   - [https://www.oracle.com/java/technologies/faq-sun-packages.html](https://www.oracle.com/java/technologies/faq-sun-packages.html)
+- HTTP/2 support
 - SSL/TLS support (optional)
 - HTTP BASIC authentication (optional)
   - single user with a username / password

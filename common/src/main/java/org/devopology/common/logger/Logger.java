@@ -62,7 +62,7 @@ public class Logger {
 
     /**
      * Method to log a message
-     * 
+     *
      * @param level
      * @param message
      */

@@ -22,6 +22,7 @@ import io.undertow.security.idm.IdentityManager;
 import io.undertow.security.idm.PasswordCredential;
 import org.devopology.common.logger.Logger;
 import org.devopology.common.logger.LoggerFactory;
+import org.devopology.common.password.SaltedPassword;
 import org.devopology.common.precondition.Precondition;
 import org.devopology.common.sha1.SHA1;
 
@@ -85,8 +86,8 @@ public class UsernameSaltedPasswordIdentityManager implements IdentityManager {
 
         if (credential instanceof PasswordCredential) {
             String password = new String(((PasswordCredential) credential).getPassword());
-            password = this.salt + "/" + SHA1.hash(this.salt + "/" + password);
-            if (password.equals(this.saltedPassword)) {
+            boolean isValid = SaltedPassword.isValid(this.saltedPassword, password);
+            if (isValid) {
                 return new SimpleAccount(username, ROLES);
             }
         }
