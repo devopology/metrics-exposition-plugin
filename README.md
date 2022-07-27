@@ -180,10 +180,10 @@ The project uses a modified Github Flow branching model
 __PRs__
 
 - fork the repository
-- create a branch (or work off of your `develop` branch)
+- create a branch off of the `development` branch
 - make your changes, test, etc.
 - squash your commits
-- create a PR targeting the upstream `develop` branch
+- create a PR targeting the upstream `development` branch
 
 ## Releases
 
