@@ -175,7 +175,7 @@ __NOTES__
 The project uses a modified Github Flow branching model
 
 - branch `main` contains the latest release
-- branch `develop` contains the next release
+- branch `development` contains the next release
 
 __PRs__
 
@@ -187,7 +187,7 @@ __PRs__
 
 ## Releases
 
-Releases are created via a PR from the upstream `develop` branch to the upstream `main` branch
+Releases are created via a PR from the upstream `development` branch to the upstream `main` branch
 
 ## References
 
