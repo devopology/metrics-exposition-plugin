@@ -43,13 +43,16 @@ import org.devopology.metrics.exporter.web.server.handler.DispatchingHttpHandler
 import org.devopology.metrics.exporter.web.server.security.UsernameSaltedPasswordIdentityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xnio.streams.ReaderInputStream;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.StringReader;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.util.Collections;
@@ -225,8 +228,7 @@ public class MetricsExporter {
             if (isJMXExportsEnabled) {
                 LOGGER.info("JMX exports enabled");
 
-                File jmxExporterYaml = configuration.getReadableFile(Constant.EXPORTER_SERVER_EXPORTS_JMX_FILENAME_PATH);
-                Collector collector = new JmxCollector(jmxExporterYaml, JmxCollector.Mode.AGENT);
+                Collector collector = new JmxCollector(metricsExporterYaml, JmxCollector.Mode.AGENT);
 
                 /**
                  * Handle "startDelaySeconds" as a special case.
@@ -236,7 +238,8 @@ public class MetricsExporter {
                  * In this scenario, we create a wrapper class to handle the JmxExporter behavior.
                  */
                 int startDelaySeconds = 0;
-                Map<String, ?> yamlMap2 = new Yaml().load(new FileReader(jmxExporterYaml));
+                //Map<String, ?> yamlMap2 = new Yaml().load(new FileReader(jmxExporterYaml));
+                Map<String, ?> yamlMap2 = new Yaml().load(new FileReader(metricsExporterYaml));
                 if (yamlMap2.containsKey("startDelaySeconds")) {
                     try {
                         startDelaySeconds = (Integer) yamlMap2.get("startDelaySeconds");

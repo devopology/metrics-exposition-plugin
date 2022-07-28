@@ -1,3 +1,5 @@
+---
+# Devopology metrics-exporter configuration
 exporter:
   server:
     host: 0.0.0.0
@@ -32,8 +34,6 @@ exporter:
           enabled: true
       jmx:
         enabled: true
-        # required if enabled is true
-        filename: test-application/configuration/jmx-exporter.yml
     authentication:
       basic:
         enabled: true
@@ -50,3 +50,7 @@ exporter:
         password: changeit
       certificate:
         alias: localhost
+
+# Prometheus jmx-exporter configuration
+rules:
+  - pattern: ".*"

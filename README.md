@@ -20,11 +20,6 @@ Project to expose JMX and / or Prometheus metrics in a Prometheus or OpenMetrics
 - Uses Prometheus `client_java` code for compatibility
 - Uses Prometheus `jmx_exporter` code for compatibility
 
-## Potential future features
-
-- pluggable authentication via an external jar
-- support more Undertow configuration values
-
 ## Constraints
 
 - Requires Java 8+ (No Java 6 support)
@@ -32,10 +27,14 @@ Project to expose JMX and / or Prometheus metrics in a Prometheus or OpenMetrics
   - `javaagent-x.y.z.jar`
   - `exporter-x.y.z.jar`
   - `simpleclient-x.y.z.jar`
-- Requires two configuration files
-  - `exporter.yml`
-  - `jmx-exporter.yml`
+- no runtime configuration reloading
 - Needs more testing
+
+## Potential future features
+
+- runtime configuration reloading
+- pluggable authentication via an external jar
+- support more Undertow configuration values
 
 ## Typical Linux installation
 
@@ -78,14 +77,18 @@ tar -xvf metrics-exporter.tar.gz
 
 4. Edit the `exporter.yml` configuration file
 
-- configuration in `exporter.yml` is fairly self-explanatory
 - see below for BASIC authentication password format
-  - the default username / password in `exporter.yaml` is `test` / `password` 
+- the default username / password defined `exporter.yaml` is `test` / `password` 
 
-5. Edit the `jmx-exporter.yml` configuration file
+5. Edit the `exporter.yml` configuration file, add your Prometheus `jmx-exporter` configuration
 
 - https://github.com/prometheus/jmx_exporter
 - https://github.com/prometheus/jmx_exporter/tree/master/example_configs
+
+__NOTES:__
+
+- A document separator (`---'` or `...`) can only exist on line 1 
+- Prometheus server configuration is ignored
 
 6. Add Java arguments to your application
 
@@ -106,6 +109,12 @@ __NOTES:__
 ## Configuration
 
 Configuration in `exporter.yml` is fairly self-explanatory.
+
+- an example file is in `./configuration/exporter.yml`
+
+__NOTES:__
+
+- `metrics-exporter` configuration for a `1.0.x` version will need to be migrated to a `1.1.x` version
 
 ### BASIC authentication configuration
 
@@ -172,22 +181,13 @@ __NOTES__
 
 ## Contributing
 
-The project uses a modified Github Flow branching model
-
-- branch `main` contains the latest release
-- branch `development` contains the next release
-
 __PRs__
 
 - fork the repository
-- create a branch off of the `development` branch
+- create a branch off of the `main` branch
 - make your changes, test, etc.
 - squash your commits
-- create a PR targeting the upstream `development` branch
-
-## Releases
-
-Releases are created via a PR from the upstream `development` branch to the upstream `main` branch
+- create a PR targeting the upstream `main` branch
 
 ## References
 

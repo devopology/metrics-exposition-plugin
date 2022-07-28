@@ -6,7 +6,7 @@
     <parent>
         <artifactId>metrics-exporter-parent</artifactId>
         <groupId>org.devopology</groupId>
-        <version>1.0.2</version>
+        <version>2.0.0</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>

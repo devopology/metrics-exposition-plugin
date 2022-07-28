@@ -1,5 +1,6 @@
 package org.devopology.metrics.exporter;
 
+import com.google.common.io.CharStreams;
 import org.devopology.common.converter.Converter;
 import org.devopology.common.converter.ConverterException;
 import org.devopology.common.logger.Logger;
@@ -8,9 +9,11 @@ import org.devopology.common.precondition.Precondition;
 import org.devopology.common.yamlpath.YamlPath;
 import org.devopology.common.yamlpath.PathNotFoundException;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 
 public class Configuration {
 
@@ -32,9 +35,32 @@ public class Configuration {
         // DO NOTHING
     }
 
-    public void load(Reader reader) throws IOException {
+    public void load(Reader reader) throws ConfigurationException, IOException {
         Precondition.notNull(reader, READER_IS_NULL);
-        this.yamlPath = YamlPath.parse(reader);
+
+        String contents = CharStreams.toString(reader);
+
+        // Code to scan the YAML file verifying that a document separator doesn't exist on any line number > 1
+        int lineIndex = 1;
+        BufferedReader bufferedReader = new BufferedReader(new StringReader(contents));
+        while (true) {
+            String line = bufferedReader.readLine();
+            if (line == null) {
+                break;
+            }
+
+            if ((line.equals("---") || line.equals("...")) && (lineIndex > 1)) {
+                throw new ConfigurationException(
+                        String.format(
+                                "configuration contains a document separator [%s] on line %d",
+                                line,
+                                lineIndex));
+            }
+
+            lineIndex++;
+        }
+
+        this.yamlPath = YamlPath.parse(new StringReader(contents));
     }
 
     public Boolean getBoolean(String path) throws ConfigurationException {

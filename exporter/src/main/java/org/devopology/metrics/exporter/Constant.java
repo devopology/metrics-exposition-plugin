@@ -36,7 +36,7 @@ public class Constant {
     public static final String EXPORTER_SERVER_EXPORTS_HOTSPOT_THREAD_ENABLED_PATH = "$.exporter.server.exports.hotspot.thread.enabled";
     public static final String EXPORTER_SERVER_EXPORTS_HOTSPOT_VERSION_INFO_ENABLED_PATH = "$.exporter.server.exports.hotspot.version-info.enabled";
     public static final String EXPORTER_SERVER_EXPORTS_JMX_ENABLED_PATH = "$.exporter.server.exports.jmx.enabled";
-    public static final String EXPORTER_SERVER_EXPORTS_JMX_FILENAME_PATH = "$.exporter.server.exports.jmx.filename";
+    //public static final String EXPORTER_SERVER_EXPORTS_JMX_FILENAME_PATH = "$.exporter.server.exports.jmx.filename";
     public static final String EXPORTER_SERVER_HOST_PATH = "$.exporter.server.host";
     public static final String EXPORTER_SERVER_PORT_PATH = "$.exporter.server.port";
     public static final String EXPORTER_SERVER_SSL_CERTIFICATE_ALIAS_PATH = "$.exporter.server.ssl.certificate.alias";
