@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.devopology.common.yamlpath;
+package org.devopology.exporter.common.yamlpath;
 
 public class PathNotFoundException extends Exception {
 

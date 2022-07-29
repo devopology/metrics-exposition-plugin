@@ -4,10 +4,10 @@
 *.ear
 .idea
 *.iml
-target
 dependency-reduced-pom.xml
 **/.classpath
 **.project
 **/.settings/
 **/*.jks
 **/target
+**/temp

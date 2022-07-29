@@ -23,6 +23,7 @@ public class Logger {
 
     private static final String LOG_FORMAT = "[%s] %s %s - %s";
 
+    private int level;
     private String prefix;
 
     /**
@@ -31,7 +32,21 @@ public class Logger {
      * @param prefix
      */
     Logger(String prefix) {
+        this.level = decode(Level.INFO);
         this.prefix = prefix;
+    }
+
+    public void setLevel(Level level) {
+        this.level = decode(level);
+    }
+
+    /**
+     * Method to log an info message
+     *
+     * @param message
+     */
+    public void trace(String message) {
+        log(Level.TRACE, message);
     }
 
     /**
@@ -40,7 +55,7 @@ public class Logger {
      * @param message
      */
     public void info(String message) {
-        log("INFO", message);
+        log(Level.INFO, message);
     }
 
     /**
@@ -49,7 +64,7 @@ public class Logger {
      * @param message
      */
     public void warn(String message) {
-        log("WARN", message);
+        log(Level.WARN, message);
     }
 
     /**
@@ -57,7 +72,7 @@ public class Logger {
      * @param message
      */
     public void error(String message) {
-        log("ERROR", message);
+        log(Level.ERROR, message);
     }
 
     /**
@@ -66,8 +81,32 @@ public class Logger {
      * @param level
      * @param message
      */
-    private void log(String level, String message) {
-        System.out.println(String.format(LOG_FORMAT, Thread.currentThread().getName(), level, this.prefix, message));
-        System.out.flush();
+    public void log(Level level, String message) {
+        int levelInt = decode(level);
+
+        if (this.level >= levelInt) {
+            System.out.println(String.format(LOG_FORMAT, Thread.currentThread().getName(), level, this.prefix, message));
+            System.out.flush();
+        }
+    }
+
+    private int decode(Level level) {
+        switch (level) {
+            case ERROR: {
+                return 0;
+            }
+            case WARN: {
+                return 10;
+            }
+            case INFO: {
+                return 20;
+            }
+
+            case TRACE: {
+                return 30;
+            }
+        }
+
+        return 20;
     }
 }

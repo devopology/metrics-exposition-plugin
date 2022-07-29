@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.devopology.metrics.exporter;
+package org.devopology.exporter.common.collector;
 
 import io.prometheus.client.Collector;
 import org.devopology.common.precondition.Precondition;
@@ -27,7 +27,7 @@ import java.util.List;
  * <p>
  * When "startDelaySeconds" is enabled, collection of ALL metrics fails
  */
-class CollectorWrapper extends Collector implements Collector.Describable {
+public class CollectorWrapper extends Collector implements Collector.Describable {
 
     private final List<MetricFamilySamples> EMPTY_METRIC_FAMILY_SAMPLES_LIST = new ArrayList<>();
 

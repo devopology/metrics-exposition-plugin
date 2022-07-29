@@ -18,11 +18,19 @@ package org.devopology.common.converter;
 
 import org.devopology.common.precondition.Precondition;
 
+/**
+ * Class to convert an Object to a Boolean
+ */
+@SuppressWarnings("unchecked")
 public class BooleanConverter implements Converter<String> {
 
     @Override
     public Boolean convert(Object object) throws ConverterException {
         Precondition.notNull(object, "object is null");
+
+        if (Boolean.class.isInstance(object)) {
+            return (Boolean) object;
+        }
 
         if (String.class.isInstance(object)) {
             String string = (String) object;

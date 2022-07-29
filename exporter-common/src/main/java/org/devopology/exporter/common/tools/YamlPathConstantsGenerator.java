@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.devopology.common.tools;
+package org.devopology.exporter.common.tools;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
@@ -23,7 +23,6 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
-import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+@SuppressWarnings("unchecked")
 public class YamlPathConstantsGenerator {
 
     public static void main(String[] args) throws Exception {

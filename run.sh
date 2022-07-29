@@ -1,6 +1,5 @@
 #!/bin/bash
 
-SIMPLE_CLIENT_VERSION=0.16.0
-VERSION=2.0.0
+source version.env
 
-java -javaagent:javaagent/target/javaagent-${VERSION}.jar="exporter/target/exporter-${VERSION}.jar&simpleclient/target/simpleclient-${SIMPLE_CLIENT_VERSION}.jar&test-application/configuration/exporter.yml" -cp test-application/target/test-application-${VERSION}.jar TestApplication
+java -Dfoo=bar -javaagent:target/metrics-exporter-javaagent-${VERSION}.jar=test-application/configuration/exporter.yml -cp test-application/target/test-application-${VERSION}-jar-with-dependencies.jar TestApplication

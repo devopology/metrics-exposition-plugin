@@ -27,7 +27,6 @@ public interface Converter<T> {
     BigIntegerConverter BIG_INTEGER = new BigIntegerConverter();
     BigDecimalConverter BIG_DECIMAL = new BigDecimalConverter();
     StringConverter STRING = new StringConverter();
-    HostOrIPAddressConverter HOST_OR_IP_ADDRESS = new HostOrIPAddressConverter();
     ReadableFileConverter READABLE_FILE = new ReadableFileConverter();
     ListConverter LIST_CONVERTER = new ListConverter();
     MapConverter MAP_CONVERTER = new MapConverter();

@@ -6,15 +6,13 @@
     <parent>
         <artifactId>metrics-exporter-parent</artifactId>
         <groupId>org.devopology</groupId>
-        <version>2.0.0</version>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-
     <artifactId>javaagent</artifactId>
 
     <build>
-        <finalName>${project.name}-${project.version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -24,11 +22,10 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
-                    <finalName>${project.artifactId}-${project.version}</finalName>
-                    <appendAssemblyId>false</appendAssemblyId>
                     <archive>
                         <manifestEntries>
-                            <PreMain-Class>org.devopology.java.agent.JavaAgent</PreMain-Class>
+                            <Built-By>devopology</Built-By>
+                            <PreMain-Class>org.devopology.metrics.exporter.JavaAgent</PreMain-Class>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -44,5 +41,19 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.devopology</groupId>
+            <artifactId>common</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.8.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 </project>

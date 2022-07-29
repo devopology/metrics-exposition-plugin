@@ -19,7 +19,7 @@ package org.devopology.metrics.exporter;
 /**
  * Class that contains "path" constants
  */
-public class Constant {
+public class ConfigurationPath {
 
     public static final String EXPORTER_SERVER_AUTHENTICATION_BASIC_ENABLED_PATH = "$.exporter.server.authentication.basic.enabled";
     public static final String EXPORTER_SERVER_AUTHENTICATION_BASIC_PASSWORD_PATH = "$.exporter.server.authentication.basic.password";

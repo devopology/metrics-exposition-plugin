@@ -5,6 +5,7 @@
  *
  * Once simpleclient_hotspot 0.17.0 is released, code can be removed
  */
+
 package io.prometheus.client.hotspot;
 
 import io.prometheus.client.Collector;

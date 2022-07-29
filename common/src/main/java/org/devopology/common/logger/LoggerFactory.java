@@ -26,15 +26,16 @@ import java.util.Map;
  */
 public class LoggerFactory {
 
-    private static final LoggerFactory LOGGER_FACTORY = new LoggerFactory();
+    private static final LoggerFactory INSTANCE = new LoggerFactory();
 
+    private Level defaultLevel = Level.INFO;
     private Map<String, Logger> loggerMap;
 
     /**
      * Constructor
      */
     private LoggerFactory() {
-       this.loggerMap = new HashMap<String, Logger>();
+        this.loggerMap = new HashMap<>();
     }
 
     /**
@@ -43,13 +44,32 @@ public class LoggerFactory {
      * @param prefix
      * @return Logger
      */
-    private synchronized Logger getOrCreateLogger(String prefix) {
+    private Logger getOrCreateLogger(String prefix) {
         Logger logger = this.loggerMap.get(prefix);
+
         if (logger == null) {
             logger = new Logger(prefix);
+            logger.setLevel(this.defaultLevel);
             this.loggerMap.put(prefix, logger);
         }
+
         return logger;
+    }
+
+    private void adjustLevel(Level level) {
+        this.defaultLevel = level;
+
+        for (String key : this.loggerMap.keySet()) {
+            Logger logger = this.loggerMap.get(key);
+            logger.setLevel(level);
+        }
+    }
+
+    private void adjustLevel(String name, Level level) {
+        Logger logger = this.loggerMap.get(name);
+        if (logger != null) {
+            logger.setLevel(level);
+        }
     }
 
     /**
@@ -71,6 +91,52 @@ public class LoggerFactory {
         Precondition.notNull(name, "prefix is null");
         Precondition.notEmpty(name, "prefix is empty");
 
-        return LOGGER_FACTORY.getOrCreateLogger(name);
+        synchronized (INSTANCE) {
+            return INSTANCE.getOrCreateLogger(name);
+        }
+    }
+
+    /**
+     * Method to set the log level globally
+     *
+     * @param level
+     */
+    public static void setLevel(Level level) {
+        synchronized (INSTANCE) {
+            INSTANCE.adjustLevel(level);
+        }
+    }
+
+    /**
+     * Method to set the log level for a named logger
+     *
+     * @param name
+     * @param level
+     */
+    public static void setLevel(String name, Level level) {
+        Precondition.notNull(name, "name is null");
+        Precondition.notEmpty(name, "name is empty");
+
+        name = name.trim();
+
+        synchronized (INSTANCE) {
+            INSTANCE.adjustLevel(name, level);
+        }
+    }
+
+    /**
+     * Method to set the log level for a Class
+     *
+     * @param clazz
+     * @param level
+     */
+    public static void setLevel(Class clazz, Level level) {
+        Precondition.notNull(clazz, "class is null");
+
+        String name = clazz.getName();
+
+        synchronized (INSTANCE) {
+            INSTANCE.adjustLevel(name, level);
+        }
     }
 }

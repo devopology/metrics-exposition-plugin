@@ -18,11 +18,19 @@ package org.devopology.common.converter;
 
 import org.devopology.common.precondition.Precondition;
 
+/**
+ * Class to convert an Object to an Integer
+ */
+@SuppressWarnings("unchecked")
 public class IntegerConverter implements Converter<Integer> {
 
     @Override
     public Integer convert(Object object) throws ConverterException {
         Precondition.notNull(object, "object is null");
+
+        if (Integer.class.isInstance(object)) {
+            return (Integer) object;
+        }
 
         if (String.class.isInstance(object)) {
             String string = (String) object;

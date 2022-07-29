@@ -7,14 +7,13 @@ Project to expose JMX and / or Prometheus metrics in a Prometheus or OpenMetrics
 - 100% Java compliant
   - [https://www.oracle.com/java/technologies/faq-sun-packages.html](https://www.oracle.com/java/technologies/faq-sun-packages.html)
 - HTTP/2 support
-- SSL/TLS support (optional)
+- SSL/TLS support
 - HTTP BASIC authentication (optional)
   - single user with a username / password
-  - password configuration stored in a salted format
-- server side metrics caching (optional)
-  - server controlled
-- fine-grained HotSpot exports
-  - configurable
+  - password configuration stored in a salted SHA1 format
+- server side metrics caching support
+  - server controlled collection
+- fine-grained HotSpot metrics configuration
 - Isolates exporter code from application code
 - Uses Undertow 2.2.x
 - Uses Prometheus `client_java` code for compatibility
@@ -22,13 +21,9 @@ Project to expose JMX and / or Prometheus metrics in a Prometheus or OpenMetrics
 
 ## Constraints
 
-- Requires Java 8+ (No Java 6 support)
-- Requires three jars
-  - `javaagent-x.y.z.jar`
-  - `exporter-x.y.z.jar`
-  - `simpleclient-x.y.z.jar`
+- requires Java 8+ (No Java 6 support)
 - no runtime configuration reloading
-- Needs more testing
+- needs more testing
 
 ## Potential future features
 
@@ -40,8 +35,8 @@ Project to expose JMX and / or Prometheus metrics in a Prometheus or OpenMetrics
 
 There are two package formats depending on whether you want to use unzip or tar
 
-- `metrics-exporter.tar.gz`
-- `metrics-exporter.zip`
+- `metrics-exporter-javaagent-x.y.z.tar.gz`
+- `metrics-exporter-javaagent-x.y.z.zip`
 
 1. Create an installation directory:
 
@@ -49,30 +44,30 @@ There are two package formats depending on whether you want to use unzip or tar
 mkdir /opt/metrics-exporter
 ```
 
-2. Copy the package to your installation directory
+2. Download / copy the installation package to your installation directory
 
 ```
-/opt/metrics-exporter/metrics-exporter.zip
-```
-
-or
-
-```
-/opt/metrics-exporter/metrics-exporter.tar.gz
-```
-
-3. Extract the package in your installation directory
-
-```
-cd /opt/metrics-exporter
-unzip metrics-exporter.zip
+/opt/metrics-exporter/metrics-exporter-javagent-x.y.z.zip
 ```
 
 or
 
 ```
+/opt/metrics-exporter/metrics-exporter-javaagent-x.y.z.tar.gz
+```
+
+3. Extract the installation package
+
+```
 cd /opt/metrics-exporter
-tar -xvf metrics-exporter.tar.gz
+unzip metrics-exporter-javagent-x.y.z.zip
+```
+
+or
+
+```
+cd /opt/metrics-exporter
+tar -xvf metrics-exporter-javagent-x.y.z.tar.gz
 ```
 
 4. Edit the `exporter.yml` configuration file
@@ -88,20 +83,18 @@ tar -xvf metrics-exporter.tar.gz
 __NOTES:__
 
 - A document separator (`---'` or `...`) can only exist on line 1 
-- Prometheus server configuration is ignored
+- Prometheus web server configuration is ignored
 
 6. Add Java arguments to your application
 
 __Example:__
 
 ```
-java -javaagent:/opt/metrics-exporter/javaagent-x.y.z.jar="/opt/metrics-exporter/exporter-x.y.z.jar&/opt/metrics-exporter/simpleclient-x.y.z.jar&/opt/metrics-exporter/exporter.yml" -jar <application jar>
+java -javaagent:/opt/metrics-exporter/metrics-exporter-javaagent-x.y.z.jar=/opt/metrics-exporter/exporter.yml -jar <application jar>
 ```
 
 __NOTES:__
 
-- javaagent argument order matters
-- double quotes are required around the arguments
 - `/opt/metrics-exporter` should __NOT__ be in your classpath
 - if your application bundles the `simpleclient` library, your application's version will be used
 - values in the `exporter.yml` configuration file need to be edited to match your paths, ports, etc.
@@ -114,7 +107,7 @@ Configuration in `exporter.yml` is fairly self-explanatory.
 
 __NOTES:__
 
-- `metrics-exporter` configuration for a `1.0.x` version will need to be migrated to a `1.1.x` version
+- configuration is not guaranteed to be compatible with older major version (`1.y.z`, `2.y.z`)
 
 ### BASIC authentication configuration
 
@@ -129,8 +122,8 @@ __NOTES__
 ## Build
 
 Requires Java 8+ and Maven to build
-
-Required zip and tar to package
+Required Maven to build
+Requires `zip` and `tar` to package
 
 Clone
 ```
@@ -147,16 +140,27 @@ Package
 ./package.sh
 ```
 
-Packaging produces two different package formats
+Packaging produces three artifacts
 
-- `./target/metrics-exporter.zip`
-- `./target/metrics-exporter.tar.gz`
+javaagent jar
+
+- `./target/metrics-exporter-javaaagent-x.y.z.jar`
+
+installation packages
+
+- `./target/metrics-exporter-javaagent-x.y.z.tar.gz`
+- `./target/metrics-exporter-javaagent-x.y.z.zip`
 
 ## Test application
 
 Build
 ```
 mvn clean package
+```
+
+Package
+```
+./package.sh
 ```
 
 Run
@@ -193,6 +197,7 @@ __PRs__
 
 - [https://github.com/prometheus/client_java](https://github.com/prometheus/client_java)
 - [https://github.com/prometheus/jmx_exporter](https://github.com/prometheus/jmx_exporter)
+- [https://github.com/undertow-io/undertow](https://github.com/undertow-io/undertow)
 
 ## Notice
 
