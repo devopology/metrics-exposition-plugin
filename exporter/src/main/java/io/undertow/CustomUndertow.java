@@ -69,7 +69,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Stuart Douglas
  */
-@SuppressWarnings({"unchecked", "deprecated"})
+@SuppressWarnings({"unchecked", "deprecation"})
 public final class CustomUndertow {
 
     private final int bufferSize;
