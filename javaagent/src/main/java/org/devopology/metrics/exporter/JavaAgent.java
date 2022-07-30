@@ -119,7 +119,7 @@ public class JavaAgent {
                 // The CollectorRegistry class wasn't found
                 // Hook in the classloader for the embedded simpleclient classes
 
-                LOGGER.info(String.format("simpleclient libraries not found, using embedded simplelclient libaries"));
+                LOGGER.info(String.format("simpleclient libraries not found, using embedded simplelclient libraries"));
                 LOGGER.info(String.format("NOTE: if your application requires the simpleclient libraries, you will see a ClassNotFoundException"));
 
                 classLoader = new JarClassLoader(simpleClientJar, classLoader);
