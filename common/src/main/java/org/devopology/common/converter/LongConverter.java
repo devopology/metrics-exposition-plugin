@@ -18,11 +18,19 @@ package org.devopology.common.converter;
 
 import org.devopology.common.precondition.Precondition;;
 
+/**
+ * Method to convert an Object to a Long
+ */
+@SuppressWarnings("unchecked")
 public class LongConverter implements Converter<Long> {
 
     @Override
     public Long convert(Object object) throws ConverterException {
         Precondition.notNull(object, "object is null");
+
+        if (Long.class.isInstance(object)) {
+            return (Long) object;
+        }
 
         if (String.class.isInstance(object)) {
             String string = (String) object;

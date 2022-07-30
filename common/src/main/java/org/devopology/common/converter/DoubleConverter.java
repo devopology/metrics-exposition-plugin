@@ -18,11 +18,19 @@ package org.devopology.common.converter;
 
 import org.devopology.common.precondition.Precondition;
 
+/**
+ * Class to converter an Object to a Double
+ */
+@SuppressWarnings("unchecked")
 public class DoubleConverter implements Converter<Double> {
 
     @Override
     public Double convert(Object object) throws ConverterException {
         Precondition.notNull(object, "object is null");
+
+        if (Double.class.isInstance(object)) {
+            return (Double) object;
+        }
 
         if (String.class.isInstance(object)) {
             String string = (String) object;

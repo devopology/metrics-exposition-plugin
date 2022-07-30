@@ -1,33 +1,47 @@
 #!/bin/bash
 
-echo "Packaging artifacts...";
+set -e
 
-echo "Removing ./target"
+source version.env
+
+rm -Rf temp
+mkdir -p temp
+
 rm -Rf target
+mkdir -p target
 
-echo "Creating ./target"
-mkdir -p target/temp
+cp simpleclient/target/simpleclient*-jar-with-dependencies.jar temp/simpleclient.pkg
+cp exporter/target/exporter*-jar-with-dependencies.jar temp/exporter.pkg
+cp javaagent/target/javaagent*-jar-with-dependencies.jar temp/javaagent-${VERSION}.jar
+cp configuration/exporter.yml temp/.
+cp configuration/localhost.pkcs12 temp/.
+cp temp/javaagent-${VERSION}.jar temp/metrics-exporter-javaagent-${VERSION}.jar
 
-echo "Copying simpleclient/target/simpleclient*.jar -> target/temp/."
-cp simpleclient/target/simpleclient*.jar target/temp/.
+zip -q -j -9 temp/metrics-exporter-javaagent-${VERSION}.jar temp/exporter.pkg
+zip -q -j -9 temp/metrics-exporter-javaagent-${VERSION}.jar temp/simpleclient.pkg
 
-echo "Copying exporter/target/exporter*.jar -> target/temp/."
-cp exporter/target/exporter*.jar target/temp/.
+cp temp/metrics-exporter-javaagent-${VERSION}.jar target/.
 
-echo "Copying javaagent/target/javaagent*.jar -> target/temp/."
-cp javaagent/target/javaagent*.jar target/temp/.
+echo ""
+echo "Final javaagent jar..."
+echo ""
+echo "    target/metrics-exporter-javaaagent-${VERSION}.jar"
+echo ""
 
-echo "Copying metrics-exporter/configuration/exporter.yml -> target/temp/."
-cp configuration/exporter.yml target/temp/.
+zip -q -j -9 temp/metrics-exporter-javaagent-${VERSION}.zip temp/metrics-exporter-javaagent-${VERSION}.jar temp/exporter.yml
 
-echo "Copying metrics-exporter/configuration/jmx-exporter.yml -> target/temp/."
-cp configuration/jmx-exporter.yml target/temp/.
+cp temp/metrics-exporter-javaagent-${VERSION}.zip target/.
 
-echo "Copying metrics-exporter/configuration/localhost.pkcs12 -> target/temp/."
-cp configuration/localhost.pkcs12 target/temp/.
+echo "Zip package..."
+echo ""
+echo "    target/metrics-exporter-javaagent-${VERSION}.zip"
+echo ""
 
-zip -j ./target/metrics-exporter.zip ./target/temp/*
-echo "Artifact package ./target/metrics-exporter.zip"
+tar -cf temp/metrics-exporter-javaagent-${VERSION}.tar.gz -C temp metrics-exporter-javaagent-${VERSION}.jar exporter.yml --owner=0 --group=0
 
-tar cfvz ./target/metrics-exporter.tar.gz -C ./target/temp .
-echo "Artifact package ./target/metrics-exporter.tar.gz"
+cp temp/metrics-exporter-javaagent-${VERSION}.tar.gz target/.
+
+echo "tar.gz package..."
+echo ""
+echo "    target/metrics-exporter-javaagent-${VERSION}.tar.gz"
+echo ""

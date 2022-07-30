@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.devopology.java.agent;
+package org.devopology.metrics.exporter;
 
 import java.io.InputStreamReader;
 import java.util.Properties;

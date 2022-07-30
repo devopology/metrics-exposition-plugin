@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package org.devopology.common.converter;
+package org.devopology.exporter.common.converter;
 
 import com.google.common.net.InetAddresses;
 import com.google.common.net.InternetDomainName;
+import org.devopology.common.converter.ConverterException;
+import org.devopology.common.converter.StringConverter;
 import org.devopology.common.precondition.Precondition;
 
+@SuppressWarnings("unchecked")
 public class HostOrIPAddressConverter extends StringConverter {
 
     @Override

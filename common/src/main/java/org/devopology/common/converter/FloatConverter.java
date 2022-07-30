@@ -18,11 +18,19 @@ package org.devopology.common.converter;
 
 import org.devopology.common.precondition.Precondition;
 
+/**
+ * Class to convert an Object a Float
+ */
+@SuppressWarnings("unchecked")
 public class FloatConverter implements Converter<Float> {
 
     @Override
     public Float convert(Object object) throws ConverterException {
         Precondition.notNull(object, "object is null");
+
+        if (Float.class.isInstance(object)) {
+            return (Float) object;
+        }
 
         if (String.class.isInstance(object)) {
             String string = (String) object;

@@ -20,11 +20,19 @@ import org.devopology.common.precondition.Precondition;
 
 import java.math.BigDecimal;
 
+/**
+ * Class to convert an Object to a BigDecimal
+ */
+@SuppressWarnings("unchecked")
 public class BigDecimalConverter implements Converter<BigDecimal> {
 
     @Override
     public BigDecimal convert(Object object) throws ConverterException {
         Precondition.notNull(object, "value is null");
+
+        if (BigDecimal.class.isInstance(object)) {
+            return (BigDecimal) object;
+        }
 
         if (String.class.isInstance(object)) {
             String string = (String) object;

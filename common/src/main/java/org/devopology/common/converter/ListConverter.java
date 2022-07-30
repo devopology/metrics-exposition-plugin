@@ -20,6 +20,10 @@ import org.devopology.common.precondition.Precondition;
 
 import java.util.List;
 
+/**
+ * Method to convert an Object to a List
+ */
+@SuppressWarnings("unchecked")
 public class ListConverter implements Converter<List<Object>> {
 
     @Override

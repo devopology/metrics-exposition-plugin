@@ -20,6 +20,10 @@ import org.devopology.common.precondition.Precondition;
 
 import java.util.Map;
 
+/**
+ * Method to convert an Objec to a Map
+ */
+@SuppressWarnings("unchecked")
 public class MapConverter implements Converter<Map<String, Object>> {
 
     @Override

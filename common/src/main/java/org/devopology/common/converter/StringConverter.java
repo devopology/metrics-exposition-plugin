@@ -18,6 +18,10 @@ package org.devopology.common.converter;
 
 import org.devopology.common.precondition.Precondition;
 
+/**
+ * Method to convert an Object to a String
+ */
+@SuppressWarnings("unchecked")
 public class StringConverter implements Converter<String> {
 
     @Override

@@ -21,8 +21,9 @@ import org.devopology.common.precondition.Precondition;
 import java.io.File;
 
 /**
- *
+ * Class to convert an Object to a File, ensuring it exists, is a file, and readable
  */
+@SuppressWarnings("unchecked")
 public class ReadableFileConverter implements Converter<File> {
 
     public File convert(Object object) throws ConverterException {

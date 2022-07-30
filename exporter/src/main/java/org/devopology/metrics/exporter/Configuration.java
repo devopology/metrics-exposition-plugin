@@ -6,8 +6,9 @@ import org.devopology.common.converter.ConverterException;
 import org.devopology.common.logger.Logger;
 import org.devopology.common.logger.LoggerFactory;
 import org.devopology.common.precondition.Precondition;
-import org.devopology.common.yamlpath.YamlPath;
-import org.devopology.common.yamlpath.PathNotFoundException;
+import org.devopology.exporter.common.converter.HostOrIPAddressConverter;
+import org.devopology.exporter.common.yamlpath.YamlPath;
+import org.devopology.exporter.common.yamlpath.PathNotFoundException;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,6 +19,8 @@ import java.io.StringReader;
 public class Configuration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
+
+    private static final HostOrIPAddressConverter HOST_OR_IP_ADDRESS_CONVERTER = new HostOrIPAddressConverter();
 
     private static final int OBJECT_NOT_NULL = 0;
     private static final int OBJECT_NULL_AND_REQUIRED = 1;
@@ -223,7 +226,7 @@ public class Configuration {
             int state = state(object, isRequired);
             switch (state) {
                 case OBJECT_NOT_NULL: {
-                    return Converter.STRING.convert(object);
+                    return HOST_OR_IP_ADDRESS_CONVERTER.convert(object);
                 }
                 case OBJECT_NULL_AND_REQUIRED: {
                     throw new ConfigurationException(String.format(PATH_VALUE_IS_REQUIRED, path));

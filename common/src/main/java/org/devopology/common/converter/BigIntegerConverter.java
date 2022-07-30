@@ -20,11 +20,19 @@ import org.devopology.common.precondition.Precondition;
 
 import java.math.BigInteger;
 
+/**
+ * Class to convert an Object to a BigInteger
+ */
+@SuppressWarnings("unchecked")
 public class BigIntegerConverter implements Converter<BigInteger> {
 
     @Override
     public BigInteger convert(Object object) throws ConverterException {
         Precondition.notNull(object, "object is null");
+
+        if (BigInteger.class.isInstance(object)) {
+            return (BigInteger) object;
+        }
 
         if (String.class.isInstance(object)) {
             String string = (String) object;
