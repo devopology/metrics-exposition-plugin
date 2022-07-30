@@ -35,7 +35,7 @@ public class LoggerFactory {
      * Constructor
      */
     private LoggerFactory() {
-        this.loggerMap = new HashMap<>();
+        loggerMap = new HashMap<>();
     }
 
     /**
@@ -45,28 +45,28 @@ public class LoggerFactory {
      * @return Logger
      */
     private Logger getOrCreateLogger(String prefix) {
-        Logger logger = this.loggerMap.get(prefix);
+        Logger logger = loggerMap.get(prefix);
 
         if (logger == null) {
             logger = new Logger(prefix);
-            logger.setLevel(this.defaultLevel);
-            this.loggerMap.put(prefix, logger);
+            logger.setLevel(defaultLevel);
+            loggerMap.put(prefix, logger);
         }
 
         return logger;
     }
 
     private void adjustLevel(Level level) {
-        this.defaultLevel = level;
+        defaultLevel = level;
 
-        for (String key : this.loggerMap.keySet()) {
-            Logger logger = this.loggerMap.get(key);
+        for (String key : loggerMap.keySet()) {
+            Logger logger = loggerMap.get(key);
             logger.setLevel(level);
         }
     }
 
     private void adjustLevel(String name, Level level) {
-        Logger logger = this.loggerMap.get(name);
+        Logger logger = loggerMap.get(name);
         if (logger != null) {
             logger.setLevel(level);
         }

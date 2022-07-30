@@ -1,3 +1,19 @@
+/*
+ * Copyright 2022 Douglas Hoard
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.devopology.metrics.exporter;
 
 import com.google.common.io.CharStreams;
@@ -12,8 +28,8 @@ import org.devopology.exporter.common.yamlpath.PathNotFoundException;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.io.StringReader;
 
 public class Configuration {
@@ -32,16 +48,23 @@ public class Configuration {
     private static final String READER_IS_NULL = "reader is null";
     private static final String NO_DATA_LOADED = "no data";
 
+    private File yamlConfigurationFile;
     private YamlPath yamlPath;
 
     public Configuration() {
         // DO NOTHING
     }
 
-    public void load(Reader reader) throws ConfigurationException, IOException {
-        Precondition.notNull(reader, READER_IS_NULL);
+    public void load(File yamlConfigurationFile) throws ConfigurationException, IOException {
+        Precondition.notNull(yamlConfigurationFile, READER_IS_NULL);
 
-        String contents = CharStreams.toString(reader);
+        this.yamlConfigurationFile = yamlConfigurationFile;
+
+        String contents = null;
+
+        try (FileReader fileReader = new FileReader(yamlConfigurationFile)) {
+            contents = CharStreams.toString(fileReader);
+        }
 
         // Code to scan the YAML file verifying that a document separator doesn't exist on any line number > 1
         int lineIndex = 1;
@@ -63,7 +86,11 @@ public class Configuration {
             lineIndex++;
         }
 
-        this.yamlPath = YamlPath.parse(new StringReader(contents));
+        yamlPath = YamlPath.parse(new StringReader(contents));
+    }
+
+    public File getYamlConfigurationFile() {
+        return yamlConfigurationFile;
     }
 
     public Boolean getBoolean(String path) throws ConfigurationException {
@@ -73,7 +100,7 @@ public class Configuration {
     public Boolean getBoolean(String path, boolean isRequired) throws ConfigurationException {
         Precondition.notNull(path, PATH_IS_NULL);
         Precondition.notEmpty(path, PATH_IS_EMPTY);
-        Precondition.checkState(this.yamlPath != null, NO_DATA_LOADED);
+        Precondition.checkState(yamlPath != null, NO_DATA_LOADED);
 
         path = path.trim();
 
@@ -109,7 +136,7 @@ public class Configuration {
     public Integer getInteger(String path, boolean isRequired) throws ConfigurationException {
         Precondition.notNull(path, PATH_IS_NULL);
         Precondition.notEmpty(path, PATH_IS_EMPTY);
-        Precondition.checkState(this.yamlPath != null, NO_DATA_LOADED);
+        Precondition.checkState(yamlPath != null, NO_DATA_LOADED);
 
         path = path.trim();
 
@@ -145,7 +172,7 @@ public class Configuration {
     public Long getLong(String path, boolean isRequired) throws ConfigurationException {
         Precondition.notNull(path, PATH_IS_NULL);
         Precondition.notEmpty(path, PATH_IS_EMPTY);
-        Precondition.checkState(this.yamlPath != null, NO_DATA_LOADED);
+        Precondition.checkState(yamlPath != null, NO_DATA_LOADED);
 
         path = path.trim();
 
@@ -181,7 +208,7 @@ public class Configuration {
     public String getString(String path, boolean isRequired) throws ConfigurationException {
         Precondition.notNull(path, PATH_IS_NULL);
         Precondition.notEmpty(path, PATH_IS_EMPTY);
-        Precondition.checkState(this.yamlPath != null, NO_DATA_LOADED);
+        Precondition.checkState(yamlPath != null, NO_DATA_LOADED);
 
         path = path.trim();
 
@@ -217,7 +244,7 @@ public class Configuration {
     public String getHostOrIPAddress(String path, boolean isRequired) throws ConfigurationException {
         Precondition.notNull(path, PATH_IS_NULL);
         Precondition.notEmpty(path, PATH_IS_EMPTY);
-        Precondition.checkState(this.yamlPath != null, NO_DATA_LOADED);
+        Precondition.checkState(yamlPath != null, NO_DATA_LOADED);
 
         path = path.trim();
 
@@ -253,7 +280,7 @@ public class Configuration {
     public File getReadableFile(String path, boolean isRequired) throws ConfigurationException {
         Precondition.notNull(path, PATH_IS_NULL);
         Precondition.notEmpty(path, PATH_IS_EMPTY);
-        Precondition.checkState(this.yamlPath != null, NO_DATA_LOADED);
+        Precondition.checkState(yamlPath != null, NO_DATA_LOADED);
 
         path = path.trim();
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.devopology.metrics.exporter.web.server.handler;
+package org.devopology.metrics.exporter.undertow.handler;
 
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.common.TextFormat;
@@ -50,7 +50,7 @@ public class MetricsHttpHandler implements HttpHandler {
         this.cacheMilliseconds = cacheMilliseconds;
 
         if (isCachingEnabled) {
-            this.responseMap = ExpiringMap.builder().expiration(cacheMilliseconds.longValue(), TimeUnit.MILLISECONDS).build();
+            responseMap = ExpiringMap.builder().expiration(cacheMilliseconds.longValue(), TimeUnit.MILLISECONDS).build();
         }
     }
 
@@ -70,12 +70,12 @@ public class MetricsHttpHandler implements HttpHandler {
 
         if ((isCachingEnabled) && (cacheMilliseconds != null)) {
             synchronized (this) {
-                response = this.responseMap.get(contentType);
+                response = responseMap.get(contentType);
                 if (response == null) {
                     StringWriter stringWriter = new StringWriter(4096);
                     TextFormat.writeFormat(contentType, stringWriter, CollectorRegistry.defaultRegistry.metricFamilySamples());
                     response = stringWriter.toString();
-                    this.responseMap.put(contentType, response);
+                    responseMap.put(contentType, response);
                 }
             }
         } else {

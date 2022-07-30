@@ -44,8 +44,8 @@ public class YamlPathConstantsGenerator {
         // Load the YAML configuration using a custom Resolver to return String values
         Yaml yaml = new Yaml(new Constructor(), new Representer(), new DumperOptions(), new LoaderOptions(), new org.yaml.snakeyaml.resolver.Resolver() {
             protected void addImplicitResolvers() {
-                this.addImplicitResolver(Tag.MERGE, MERGE, "<");
-                this.addImplicitResolver(Tag.YAML, YAML, "!&*");
+                addImplicitResolver(Tag.MERGE, MERGE, "<");
+                addImplicitResolver(Tag.YAML, YAML, "!&*");
             }
         });
 

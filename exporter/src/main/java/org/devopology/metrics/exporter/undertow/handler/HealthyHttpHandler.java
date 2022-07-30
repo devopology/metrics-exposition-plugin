@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package org.devopology.metrics.exporter.web.server.handler;
+package org.devopology.metrics.exporter.undertow.handler;
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 
 /**
- * Class to handle a "/favicon.ico" request
+ * Class to handle a "/-/healthy" request
  */
-public class FaviconHttpHandler implements HttpHandler {
+public class HealthyHttpHandler implements HttpHandler {
 
     @Override
     public void handleRequest(HttpServerExchange httpServerExchange) throws Exception {
-        httpServerExchange.setStatusCode(404);
         httpServerExchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
-        httpServerExchange.getResponseSender().send("404 NOT FOUND");
+        httpServerExchange.getResponseSender().send("Exporter is healthy.");
     }
 }

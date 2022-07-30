@@ -32,8 +32,8 @@ public class Logger {
      * @param prefix
      */
     Logger(String prefix) {
-        this.level = decode(Level.INFO);
         this.prefix = prefix;
+        level = decode(Level.INFO);
     }
 
     public void setLevel(Level level) {
@@ -83,9 +83,8 @@ public class Logger {
      */
     public void log(Level level, String message) {
         int levelInt = decode(level);
-
         if (this.level >= levelInt) {
-            System.out.println(String.format(LOG_FORMAT, Thread.currentThread().getName(), level, this.prefix, message));
+            System.out.println(String.format(LOG_FORMAT, Thread.currentThread().getName(), level, prefix, message));
             System.out.flush();
         }
     }

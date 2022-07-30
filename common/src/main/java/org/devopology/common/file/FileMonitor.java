@@ -30,28 +30,28 @@ public class FileMonitor {
 
     public FileMonitor(File file) {
         this.file = file;
-        this.fileMonitorListenerList = new ArrayList<>();
+        fileMonitorListenerList = new ArrayList<>();
     }
 
     public FileMonitor addListener(FileMonitorListener fileMonitorListener) {
         Precondition.notNull(fileMonitorListener, "fileMonitorListener is null");
 
-        this.fileMonitorListenerList.add(fileMonitorListener);
+        fileMonitorListenerList.add(fileMonitorListener);
 
         return this;
     }
 
     public synchronized void start() {
-        if (this.thread == null) {
-            this.thread = new Thread(() -> monitor());
-            this.thread.setDaemon(true);
-            this.thread.setName("file-monitor");
-            this.thread.start();
+        if (thread == null) {
+            thread = new Thread(() -> monitor());
+            thread.setDaemon(true);
+            thread.setName("file-monitor");
+            thread.start();
         }
     }
 
     private void monitor() {
-        long previousLastModified = this.file.lastModified();
+        long previousLastModified = file.lastModified();
 
         while (true) {
             try {
@@ -60,14 +60,14 @@ public class FileMonitor {
                 // DO NOTHING
             }
 
-            if (this.file.exists() && this.file.isFile() && this.file.canRead()) {
+            if (file.exists() && file.isFile() && file.canRead()) {
 
-                long lastModified = this.file.lastModified();
+                long lastModified = file.lastModified();
 
                 if (lastModified != previousLastModified) {
-                    for (FileMonitorListener fileMonitorListener : this.fileMonitorListenerList) {
+                    for (FileMonitorListener fileMonitorListener : fileMonitorListenerList) {
                         try {
-                            fileMonitorListener.onChange(this.file);
+                            fileMonitorListener.onChange(file);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

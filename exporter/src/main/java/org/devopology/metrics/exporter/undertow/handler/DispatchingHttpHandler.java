@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.devopology.metrics.exporter.web.server.handler;
+package org.devopology.metrics.exporter.undertow.handler;
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -43,9 +43,9 @@ public class DispatchingHttpHandler implements HttpHandler {
 
         this.isCachingEnabled = isCachingEnabled;
         this.cacheMilliseconds = cacheMilliseconds;
-        this.healthyHttpHandler = new HealthyHttpHandler();
-        this.faviconHttpHandler = new FaviconHttpHandler();
-        this.defaultHttpHandler = new MetricsHttpHandler(this.isCachingEnabled, this.cacheMilliseconds);
+        healthyHttpHandler = new HealthyHttpHandler();
+        faviconHttpHandler = new FaviconHttpHandler();
+        defaultHttpHandler = new MetricsHttpHandler(isCachingEnabled, cacheMilliseconds);
     }
 
     @Override

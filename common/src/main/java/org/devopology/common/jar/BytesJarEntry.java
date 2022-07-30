@@ -45,7 +45,7 @@ public class BytesJarEntry extends JarEntry {
      */
     @Override
     public long getSize() {
-        return this.bytes.length;
+        return bytes.length;
     }
 
     /**
@@ -54,7 +54,7 @@ public class BytesJarEntry extends JarEntry {
      * @return
      */
     public byte[] getBytes() {
-        return this.bytes;
+        return bytes;
     }
 
     /**
@@ -63,7 +63,7 @@ public class BytesJarEntry extends JarEntry {
      * @return
      */
     public InputStream getInputStream() {
-        return new ByteArrayInputStream(this.bytes);
+        return new ByteArrayInputStream(bytes);
     }
 
     public String toString() {

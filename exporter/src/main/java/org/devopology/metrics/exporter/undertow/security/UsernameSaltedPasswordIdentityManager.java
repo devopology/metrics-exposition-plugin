@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.devopology.metrics.exporter.web.server.security;
+package org.devopology.metrics.exporter.undertow.security;
 
 import io.undertow.security.idm.Account;
 import io.undertow.security.idm.Credential;
@@ -24,7 +24,6 @@ import org.devopology.common.logger.Logger;
 import org.devopology.common.logger.LoggerFactory;
 import org.devopology.common.password.SaltedPassword;
 import org.devopology.common.precondition.Precondition;
-import org.devopology.common.sha1.SHA1;
 
 import java.security.Principal;
 import java.util.HashSet;
@@ -57,7 +56,7 @@ public class UsernameSaltedPasswordIdentityManager implements IdentityManager {
 
         this.username = username.trim();
         this.saltedPassword = saltedPassword.trim();
-        this.salt = this.saltedPassword.substring(0, this.saltedPassword.indexOf("/"));
+        salt = this.saltedPassword.substring(0, this.saltedPassword.indexOf("/"));
     }
 
     /**
@@ -86,7 +85,7 @@ public class UsernameSaltedPasswordIdentityManager implements IdentityManager {
 
         if (credential instanceof PasswordCredential) {
             String password = new String(((PasswordCredential) credential).getPassword());
-            boolean isValid = SaltedPassword.isValid(this.saltedPassword, password);
+            boolean isValid = SaltedPassword.isValid(saltedPassword, password);
             if (isValid) {
                 return new SimpleAccount(username, ROLES);
             }
@@ -112,18 +111,18 @@ public class UsernameSaltedPasswordIdentityManager implements IdentityManager {
         private Set<String> rolesSet;
 
         public SimpleAccount(String username, Set<String> rolesSet) {
-            this.principal = new SimplePrincipal(username);
-            this.rolesSet = new HashSet<>();
+            principal = new SimplePrincipal(username);
+            rolesSet = new HashSet<>();
         }
 
         @Override
         public Principal getPrincipal() {
-            return this.principal;
+            return principal;
         }
 
         @Override
         public Set<String> getRoles() {
-            return this.rolesSet;
+            return rolesSet;
         }
     }
 
@@ -137,7 +136,7 @@ public class UsernameSaltedPasswordIdentityManager implements IdentityManager {
 
         @Override
         public String getName() {
-            return this.username;
+            return username;
         }
     }
 }

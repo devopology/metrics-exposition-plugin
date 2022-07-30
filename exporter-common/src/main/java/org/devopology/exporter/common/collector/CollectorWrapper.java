@@ -42,7 +42,7 @@ public class CollectorWrapper extends Collector implements Collector.Describable
     @Override
     public List<MetricFamilySamples> collect() {
         try {
-            return this.collector.collect();
+            return collector.collect();
         } catch (IllegalStateException e) {
             // Fragile code since it relies on the message based on JmxExporter code
             if ("JMXCollector waiting for startDelaySeconds".equals(e.getMessage())) {
@@ -55,10 +55,10 @@ public class CollectorWrapper extends Collector implements Collector.Describable
 
     @Override
     public List<MetricFamilySamples> describe() {
-        if (this.collector instanceof Describable) {
-            return ((Describable) this.collector).describe();
+        if (collector instanceof Describable) {
+            return ((Describable) collector).describe();
         } else {
-            return this.collector.collect();
+            return collector.collect();
         }
     }
 }

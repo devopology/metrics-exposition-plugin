@@ -28,7 +28,7 @@ import java.lang.reflect.Method;
 @SuppressWarnings("unchecked")
 public class ExporterProxy {
 
-    private static final String ORG_DEVOPOLOGY_METRICS_EXPORTER_CLASSNAME = "org.devopology.metrics.exporter.Exporter";
+    private static final String ORG_DEVOPOLOGY_METRICS_EXPORTER__CLASSNAME = "org.devopology.metrics.exporter.Exporter";
 
     private Class clazz;
     private Object object;
@@ -47,10 +47,10 @@ public class ExporterProxy {
     public ExporterProxy(ClassLoader classLoader) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ClassNotFoundException {
         Precondition.notNull(classLoader, "classLoader is null");
 
-        this.clazz = classLoader.loadClass(ORG_DEVOPOLOGY_METRICS_EXPORTER_CLASSNAME);
-        this.object = clazz.getDeclaredConstructor((Class[]) null).newInstance((Object[]) null);
-        this.start = clazz.getDeclaredMethod("start", new Class[] { File.class });
-        this.stop = clazz.getDeclaredMethod("stop", (Class[]) null);
+        clazz = classLoader.loadClass(ORG_DEVOPOLOGY_METRICS_EXPORTER__CLASSNAME);
+        object = clazz.getDeclaredConstructor((Class[]) null).newInstance((Object[]) null);
+        start = clazz.getDeclaredMethod("start", new Class[] { File.class });
+        stop = clazz.getDeclaredMethod("stop", (Class[]) null);
     }
 
     /**
@@ -61,7 +61,7 @@ public class ExporterProxy {
      * @throws IllegalAccessException
      */
     public void start(File file) throws InvocationTargetException, IllegalAccessException {
-        this.start.invoke(this.object, new Object[] { file });
+        start.invoke(this.object, new Object[] { file });
     }
 
     /**
@@ -71,6 +71,6 @@ public class ExporterProxy {
      * @throws IllegalAccessException
      */
     public void stop() throws InvocationTargetException, IllegalAccessException {
-        this.stop.invoke(this.object, (Object[]) null);
+        stop.invoke(this.object, (Object[]) null);
     }
 }

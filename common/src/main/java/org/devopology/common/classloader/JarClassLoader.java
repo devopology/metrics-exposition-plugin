@@ -46,7 +46,7 @@ public class JarClassLoader extends ClassLoader {
     public JarClassLoader(Jar jar, ClassLoader parent) {
         super(parent);
         this.jar = jar;
-        this.classMap = Collections.synchronizedMap(new TreeMap<>());
+        classMap = Collections.synchronizedMap(new TreeMap<>());
     }
 
     /**
@@ -55,7 +55,7 @@ public class JarClassLoader extends ClassLoader {
      * @return
      */
     public Set<String> getClassNames() {
-        return this.classMap.keySet();
+        return classMap.keySet();
     }
 
     /**
@@ -71,14 +71,14 @@ public class JarClassLoader extends ClassLoader {
     public Class findClass(String classname) throws ClassNotFoundException {
         LOGGER.trace(String.format("findClass() classname = [%s]", classname));
 
-        Class clazz = this.classMap.get(classname);
+        Class clazz = classMap.get(classname);
 
         if (clazz == null) {
             byte[] classBytes = loadClassBytes(classname);
 
             if (classBytes != null) {
                 clazz = defineClass(classname, classBytes, 0, classBytes.length);
-                this.classMap.put(classname, clazz);
+                classMap.put(classname, clazz);
             }
         }
 
@@ -98,7 +98,7 @@ public class JarClassLoader extends ClassLoader {
     private byte[] loadClassBytes(String classname) {
         String jarEntryName = classname.replaceAll("\\.", "/") + ".class";
 
-        BytesJarEntry bytesJarEntry = this.jar.get(jarEntryName);
+        BytesJarEntry bytesJarEntry = jar.get(jarEntryName);
         if (bytesJarEntry != null) {
             return bytesJarEntry.getBytes();
         }
@@ -118,7 +118,7 @@ public class JarClassLoader extends ClassLoader {
     public InputStream getResourceAsStream(String name) {
         LOGGER.trace(String.format("getResourceAsStream() name = [%s]", name));
 
-        BytesJarEntry bytesJarEntry = this.jar.get(name);
+        BytesJarEntry bytesJarEntry = jar.get(name);
         if (bytesJarEntry != null) {
             return bytesJarEntry.getInputStream();
         }

@@ -46,7 +46,7 @@ public class Jar {
      * Constructor
      */
     public Jar() {
-        this.jarEntryMap = new TreeMap<>();
+        jarEntryMap = new TreeMap<>();
     }
 
     /**
@@ -97,7 +97,7 @@ public class Jar {
                 }
 
                 byte[] jarEntryBytes = byteArrayOutputStream.toByteArray();
-                this.jarEntryMap.put(jarEntry.getName(), new BytesJarEntry(jarEntry, jarEntryBytes));
+                jarEntryMap.put(jarEntry.getName(), new BytesJarEntry(jarEntry, jarEntryBytes));
             }
         }
     }
@@ -106,7 +106,7 @@ public class Jar {
      * Method to clear all previously loaded entries
      */
     public void clear() {
-        this.jarEntryMap.clear();
+        jarEntryMap.clear();
     }
 
     /**
@@ -116,7 +116,7 @@ public class Jar {
      * @return
      */
     public boolean containsKey(String key) {
-        return this.jarEntryMap.containsKey(key);
+        return jarEntryMap.containsKey(key);
     }
 
     /**
@@ -126,7 +126,7 @@ public class Jar {
      * @return
      */
     public BytesJarEntry get(String key) {
-        return this.jarEntryMap.get(key);
+        return jarEntryMap.get(key);
     }
 
     /**
@@ -135,7 +135,7 @@ public class Jar {
      * @return
      */
     public Set<String> keySet() {
-        return this.jarEntryMap.keySet();
+        return jarEntryMap.keySet();
     }
 
     /**
@@ -143,7 +143,7 @@ public class Jar {
      * @return
      */
     public Set<Map.Entry<String, BytesJarEntry>> entrySet() {
-        return this.jarEntryMap.entrySet();
+        return jarEntryMap.entrySet();
     }
 
     /**
@@ -152,6 +152,6 @@ public class Jar {
      * @return
      */
     public int size() {
-        return this.jarEntryMap.size();
+        return jarEntryMap.size();
     }
 }

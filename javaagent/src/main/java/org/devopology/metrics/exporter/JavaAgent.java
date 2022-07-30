@@ -34,16 +34,10 @@ import java.util.jar.JarInputStream;
 @SuppressWarnings("unchecked")
 public class JavaAgent {
 
-    private static final String PACKAGE_NAME;
-
-    static {
-        String classname = JavaAgent.class.getName();
-        PACKAGE_NAME = classname.substring(0, classname.lastIndexOf("."));
-    }
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(PACKAGE_NAME);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JavaAgent.class);
 
     private static final String IO_PROMETHEUS_CLIENT_COLLECTOR_REGISTRY_CLASSNAME = "io.prometheus.client.CollectorRegistry";
+    private static final String ORG_DEVOPOLOGY_METRICS_EXPORTER_COMMON_CONVERTER_CONVERTER_EXCEPTION = "org.devopology.metrics.exporter.common.converter.ConverterException";
 
     // Embedded simpleclient package (jar)
     private static final String SIMPLECLIENT_PKG = "simpleclient.pkg";
@@ -73,11 +67,11 @@ public class JavaAgent {
         // argument is ignored
 
         try {
-            LOGGER.info("starting: " + Version.getVersion());
+            LOGGER.info(String.format("%s", Version.getVersion()));
 
-            Arguments arguments = Arguments.create();
+            JavaAgentArguments javaAgentArguments = JavaAgentArguments.create();
 
-            File agentJarFile = arguments.getJavaAgentJarFile();
+            File agentJarFile = javaAgentArguments.getJavaAgentJarFile();
             LOGGER.trace(String.format("agent jar = [%s]", agentJarFile));
 
             // Load the agent jar
@@ -130,8 +124,8 @@ public class JavaAgent {
             classLoader = new JarClassLoader(exporterJar, classLoader);
 
             // Start the Exporter via the proxy
-            this.exporterProxy = new ExporterProxy(classLoader);
-            this.exporterProxy.start(arguments.getYamlConfigurationFile());
+            exporterProxy = new ExporterProxy(classLoader);
+            exporterProxy.start(javaAgentArguments.getYamlConfigurationFile());
 
             LOGGER.info("running");
         } catch (IllegalArgumentException e) {
@@ -148,12 +142,13 @@ public class JavaAgent {
             }
 
             // Special case for a ConfigurationException, since we can't have a code dependency on metrics-exporter
-            if (t.getClass().getName().equals("org.devopology.metrics.exporter.common.converter.ConverterException")) {
+            if (t.getClass().getName().equals(ORG_DEVOPOLOGY_METRICS_EXPORTER_COMMON_CONVERTER_CONVERTER_EXCEPTION)) {
                 LOGGER.error("configuration error");
                 LOGGER.error(t.getMessage());
             } else {
                 t.printStackTrace();
             }
+
 
             LOGGER.error("exiting");
             System.exit(1);

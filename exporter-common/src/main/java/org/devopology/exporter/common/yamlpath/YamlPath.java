@@ -79,7 +79,7 @@ public class YamlPath {
         path = path.trim();
 
         try {
-            return this.documentContext.read(path);
+            return documentContext.read(path);
         } catch (com.jayway.jsonpath.PathNotFoundException e) {
             if (isRequired) {
                 throw new PathNotFoundException(path, String.format(PATH_NOT_FOUND, path));
@@ -99,8 +99,8 @@ public class YamlPath {
 
         Resolver resolver = new Resolver() {
             protected void addImplicitResolvers() {
-                this.addImplicitResolver(Tag.MERGE, MERGE, "<");
-                this.addImplicitResolver(Tag.YAML, YAML, "!&*");
+                addImplicitResolver(Tag.MERGE, MERGE, "<");
+                addImplicitResolver(Tag.YAML, YAML, "!&*");
             }
         };
 

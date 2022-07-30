@@ -17,18 +17,15 @@
 package org.devopology.metrics.exporter;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
  * Class to get javaagent arguments
  */
-public class Arguments {
+public class JavaAgentArguments {
 
-    private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
     private static final String ARGUMENT_DELIMITER_REGEX = "(=|:|&)";
 
     private File agentJarFile;
@@ -37,7 +34,7 @@ public class Arguments {
     /**
      * Constructor
      */
-    private Arguments() {
+    private JavaAgentArguments() {
         // DO NOTHING
     }
 
@@ -50,7 +47,7 @@ public class Arguments {
      * @return
      */
     public File getJavaAgentJarFile() {
-        return this.agentJarFile;
+        return agentJarFile;
     }
 
     protected void setYamlConfigurationFile(File yamlConfigurationFile) {
@@ -62,7 +59,7 @@ public class Arguments {
      * @return
      */
     public File getYamlConfigurationFile() {
-        return this.yamlConfigurationFile;
+        return yamlConfigurationFile;
     }
 
     /**
@@ -70,32 +67,17 @@ public class Arguments {
      *
      * @return
      */
-    public static Arguments create() {
-        String javaIoTmpDir = System.getProperty(JAVA_IO_TMPDIR);
-
-        try {
-            File tempFile = File.createTempFile("test-", null);
-
-            try (FileOutputStream fileOutputStream = new FileOutputStream(tempFile)) {
-                fileOutputStream.write("test".getBytes(StandardCharsets.UTF_8));
-            }
-
-            tempFile.delete();
-        } catch (Exception e) {
-            throw new RuntimeException(
-                    String.format("%s [%s] is required to be writable", JAVA_IO_TMPDIR, javaIoTmpDir));
-        }
-
-        Arguments arguments = new Arguments();
+    public static JavaAgentArguments create() {
+        JavaAgentArguments javaAgentArguments = new JavaAgentArguments();
 
         RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
         List<String> inputArgumentsList = runtimeMXBean.getInputArguments();
         for (String inputArgument : inputArgumentsList) {
             if (inputArgument.startsWith("-javaagent:")) {
                 String [] tokens = inputArgument.split(ARGUMENT_DELIMITER_REGEX);
-                arguments.setAgentJarFile(new File(tokens[1]));
-                arguments.setYamlConfigurationFile(new File(tokens[tokens.length - 1]));
-                return arguments;
+                javaAgentArguments.setAgentJarFile(new File(tokens[1]));
+                javaAgentArguments.setYamlConfigurationFile(new File(tokens[tokens.length - 1]));
+                return javaAgentArguments;
             }
         }
 

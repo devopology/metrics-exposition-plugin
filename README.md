@@ -85,7 +85,7 @@ __NOTES:__
 - A document separator (`---'` or `...`) can only exist on line 1 
 - Prometheus web server configuration is ignored
 
-6. Add Java arguments to your application
+6. Add Java javaAgentArguments to your application
 
 __Example:__
 
