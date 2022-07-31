@@ -2,4 +2,4 @@
 
 Code to implement the exporter
 
-External dependencies allowed
+No external dependencies allowed
