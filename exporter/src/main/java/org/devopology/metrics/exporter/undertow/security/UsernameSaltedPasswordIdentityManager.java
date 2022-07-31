@@ -22,7 +22,7 @@ import io.undertow.security.idm.IdentityManager;
 import io.undertow.security.idm.PasswordCredential;
 import org.devopology.common.logger.Logger;
 import org.devopology.common.logger.LoggerFactory;
-import org.devopology.common.password.SaltedPassword;
+import org.devopology.common.password.EncryptedPassword;
 import org.devopology.common.precondition.Precondition;
 
 import java.security.Principal;
@@ -39,24 +39,22 @@ public class UsernameSaltedPasswordIdentityManager implements IdentityManager {
     private static final Set<String> ROLES = new HashSet<>();
 
     private String username;
-    private String saltedPassword;
-    private String salt;
+    private EncryptedPassword encryptedPassword;
 
     /**
      * Constructor
      *
      * @param username
-     * @param saltedPassword
+     * @param encryptedPassword
      */
-    public UsernameSaltedPasswordIdentityManager(String username, String saltedPassword) {
+    public UsernameSaltedPasswordIdentityManager(String username, String encryptedPassword) {
         Precondition.notNull(username, "username is null");
         Precondition.notEmpty(username, "username is empty");
-        Precondition.notNull(saltedPassword, "saltedPassword is null");
-        Precondition.notEmpty(saltedPassword, "saltedPassword is empty");
+        Precondition.notNull(encryptedPassword, "encryptedPassword is null");
+        Precondition.notEmpty(encryptedPassword, "encryptedPassword is empty");
 
         this.username = username.trim();
-        this.saltedPassword = saltedPassword.trim();
-        salt = this.saltedPassword.substring(0, this.saltedPassword.indexOf("/"));
+        this.encryptedPassword = new EncryptedPassword(encryptedPassword);
     }
 
     /**
@@ -85,9 +83,16 @@ public class UsernameSaltedPasswordIdentityManager implements IdentityManager {
 
         if (credential instanceof PasswordCredential) {
             String password = new String(((PasswordCredential) credential).getPassword());
-            boolean isValid = SaltedPassword.isValid(saltedPassword, password);
-            if (isValid) {
-                return new SimpleAccount(username, ROLES);
+            if (password != null) {
+                password = password.trim();
+            }
+
+            if (password.length() > 0) {
+                String salt = this.encryptedPassword.getSalt();
+                EncryptedPassword encryptedPassword = new EncryptedPassword(salt, password);
+                if (this.encryptedPassword.equals(encryptedPassword)) {
+                    return new SimpleAccount(username, ROLES);
+                }
             }
         }
 

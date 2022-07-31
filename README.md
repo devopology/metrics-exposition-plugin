@@ -4,20 +4,24 @@ Project to expose JMX and / or Prometheus metrics in a Prometheus or OpenMetrics
 
 ## Features
 
-- 100% Java compliant
+- 100% pure Java compatibility
   - [https://www.oracle.com/java/technologies/faq-sun-packages.html](https://www.oracle.com/java/technologies/faq-sun-packages.html)
 - HTTP/2 support
 - SSL/TLS support
-- HTTP BASIC authentication
+  - keystore password configuration is in an obfuscated format (no clear-text)
+- HTTP BASIC authentication support
   - single user with a username / password
-  - password configuration stored in a salted SHA1 format
-- server side metrics caching support
-  - server controlled collection
-- fine-grained HotSpot metrics configuration
-- Isolates exporter code from application code
-- Uses Undertow 2.2.x
-- Uses Prometheus `client_java` code for compatibility
-- Uses Prometheus `jmx_exporter` code for compatibility
+  - user's password configuration is in an encrypted format (no clear-text)
+- server side metric caching support
+  - server controlled collection interval
+- fine-grained HotSport metrics configuration
+- isolated exporter code from application code
+- modern HTTP server
+  - Uses Undertow 2.2.x
+- Uses Prometheus `client_java` code
+  - compatibility
+- Uses Prometheus `jmx_exporter` code
+  - compatibility
 
 ## Constraints
 
@@ -30,6 +34,7 @@ Project to expose JMX and / or Prometheus metrics in a Prometheus or OpenMetrics
 - runtime configuration reloading
 - pluggable authentication via an external jar
 - support more Undertow configuration values
+- better BASIC authentication password encryption format
 
 ## Typical Linux installation
 
@@ -111,13 +116,19 @@ __NOTES:__
 
 ### BASIC authentication configuration
 
-The password required for BASIC authentication is in a salted format.
+The password required for BASIC authentication is in an encrypted salted format.
 
 Use the BASH script `./generate-salted-password.sh` to generate a salted password / configuration value
 
 __NOTES__
 
 - `sha512sum` is required
+
+### Keystore password configuration
+
+The password required for the keystore is in an obfuscated format.
+
+Use the BASH script `./generate-obfuscated-password.sh` to generated an obfuscated password / configuration value
 
 ## Build
 

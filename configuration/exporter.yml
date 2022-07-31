@@ -39,7 +39,7 @@ exporter:
         enabled: true
         # required if enabled is true
         username: test
-        password: GBFAHewXvo6U6YaY/2014b7737772208f02bb5bb92cf33472a9092cb876662b114be520e4b2bdefcd39bf23656ca33422d55a85c111c6b5059f703c3ee821ef922768a39bbd2c6074
+        password: SHA512:s3JGD9ZbmdMPyWWAt2gA6cIfhS1A80mj:b37ab62fc2d075fa2a819a4cc96c720b772ce7b9d826638d4787a791861737e977081600ad7dbe85f005e5c3e63ac282fd2c6730cee9c72ece6c7fde28335b91
     ssl:
       enabled: true
       # required if enabled is true
@@ -47,7 +47,7 @@ exporter:
       keystore:
         filename: /opt/metrics-exporter/localhost.pkcs12
         type: PKCS12
-        password: changeit
+        password: BASE64:NmU1dWx2cXFtYjloZGl2akE4M21BaEFJTTN1cTNGbXM6Y2hhbmdlaXQ=
       certificate:
         alias: localhost
 

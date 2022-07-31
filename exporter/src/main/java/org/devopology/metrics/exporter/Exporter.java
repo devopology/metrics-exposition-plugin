@@ -41,6 +41,7 @@ import io.undertow.security.impl.BasicAuthenticationMechanism;
 import io.undertow.server.HttpHandler;
 import org.devopology.common.logger.Logger;
 import org.devopology.common.logger.LoggerFactory;
+import org.devopology.common.password.ObfuscatedPassword;
 import org.devopology.common.precondition.Precondition;
 import org.devopology.metrics.exporter.collector.CollectorWrapper;
 import org.devopology.metrics.exporter.undertow.handler.DispatchingHttpHandler;
@@ -147,6 +148,10 @@ public class Exporter {
                 File keyStore = configuration.getReadableFile(ConfigurationPath.EXPORTER_SERVER_SSL_KEYSTORE_FILENAME_PATH);
                 String keyStoreType = configuration.getString(ConfigurationPath.EXPORTER_SERVER_SSL_KEYSTORE_TYPE_PATH);
                 String keyStorePassword = configuration.getString(ConfigurationPath.EXPORTER_SERVER_SSL_KEYSTORE_PASSWORD_PATH);
+
+                ObfuscatedPassword obfuscatedPassword = new ObfuscatedPassword(keyStorePassword);
+                keyStorePassword = obfuscatedPassword.getUnobfuscatedPassword();
+
                 String certificateAlias = configuration.getString(ConfigurationPath.EXPORTER_SERVER_SSL_CERTIFICATE_ALIAS_PATH);
                 String sslProtocol = configuration.getString(ConfigurationPath.EXPORTER_SERVER_SSL_PROTOCOL_PATH);
 
