@@ -227,6 +227,7 @@ public class Exporter {
             undertow.start();
 
             LOGGER.info("Undertow running");
+            LOGGER.info("running");
         } catch (Exception e) {
             if (undertow != null) {
                 try {

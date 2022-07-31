@@ -15,6 +15,6 @@ then
   exit 1
 fi
 
-SALTED_PASSWORD_SHA1=`echo -n "$SALT/$PASSWORD" | sha1sum | cut -d " " -f 1`
+SALTED_PASSWORD_SHA1=`echo -n "$SALT/$PASSWORD" | sha512sum | cut -d " " -f 1`
 
 echo "salted password: $SALT/$SALTED_PASSWORD_SHA1"

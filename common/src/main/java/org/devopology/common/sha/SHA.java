@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.devopology.common.sha1;
+package org.devopology.common.sha;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -24,19 +24,13 @@ import java.security.NoSuchAlgorithmException;
 /**
  * Class to implement SHA1 methods
  */
-public class SHA1 {
+public class SHA {
 
-    private SHA1() {
+    private SHA() {
         // DO NOTHING
     }
 
-    /**
-     * Hash a string
-     *
-     * @param string
-     * @return
-     */
-    public static String hash(String string) {
+    public static String sha512Hash(String string) {
         if (string == null) {
             return null;
         }
@@ -46,7 +40,7 @@ public class SHA1 {
         }
 
         try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-1");
+            MessageDigest digest = MessageDigest.getInstance("SHA-512");
             digest.reset();
             digest.update(string.getBytes("UTF-8"));
             return String.format("%040x", new BigInteger(1, digest.digest()));

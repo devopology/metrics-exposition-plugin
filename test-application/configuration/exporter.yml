@@ -39,7 +39,7 @@ exporter:
         enabled: true
         # required if enabled is true
         username: test
-        password: kKagpEG3h82BvZQt/3c91164992fb7fc0787fe4088a4963b52f95e392
+        password: GBFAHewXvo6U6YaY/2014b7737772208f02bb5bb92cf33472a9092cb876662b114be520e4b2bdefcd39bf23656ca33422d55a85c111c6b5059f703c3ee821ef922768a39bbd2c6074
     ssl:
       enabled: true
       # required if enabled is true

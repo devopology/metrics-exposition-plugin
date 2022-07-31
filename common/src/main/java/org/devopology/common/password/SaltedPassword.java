@@ -17,7 +17,7 @@
 package org.devopology.common.password;
 
 import org.devopology.common.precondition.Precondition;
-import org.devopology.common.sha1.SHA1;
+import org.devopology.common.sha.SHA;
 
 public class SaltedPassword {
 
@@ -49,7 +49,7 @@ public class SaltedPassword {
         String generatedSaltedPassword = null;
 
         if (salt != null)  {
-            generatedSaltedPassword = salt + "/" + SHA1.hash(salt + "/" + password);
+            generatedSaltedPassword = salt + "/" + SHA.sha512Hash(salt + "/" + password);
         }
 
         return saltedPassword.equals(generatedSaltedPassword);

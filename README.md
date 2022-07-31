@@ -117,7 +117,7 @@ Use the BASH script `./generate-salted-password.sh` to generate a salted passwor
 
 __NOTES__
 
-- `sha1sum` is required
+- `sha512sum` is required
 
 ## Build
 
