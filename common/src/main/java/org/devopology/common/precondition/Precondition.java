@@ -17,6 +17,7 @@
 package org.devopology.common.precondition;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 
 public class Precondition {
 
@@ -46,9 +47,26 @@ public class Precondition {
         }
     }
 
-    public static void checkState(boolean bool, String message) {
+    public static void isTrue(boolean bool, String message) {
         if (!bool) {
             throw new IllegalStateException(message);
+        }
+    }
+
+    public static void isTrue(boolean bool, Class<? extends RuntimeException> clazz, String message) {
+        if (!bool) {
+            try {
+                RuntimeException runtimeException = clazz.getDeclaredConstructor(new Class[]{String.class}).newInstance(message);
+                throw runtimeException;
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

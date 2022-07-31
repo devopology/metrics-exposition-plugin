@@ -100,7 +100,7 @@ public class Configuration {
     public Boolean getBoolean(String path, boolean isRequired) throws ConfigurationException {
         Precondition.notNull(path, PATH_IS_NULL);
         Precondition.notEmpty(path, PATH_IS_EMPTY);
-        Precondition.checkState(yamlPath != null, NO_DATA_LOADED);
+        Precondition.isTrue(yamlPath != null, NO_DATA_LOADED);
 
         path = path.trim();
 
@@ -136,7 +136,7 @@ public class Configuration {
     public Integer getInteger(String path, boolean isRequired) throws ConfigurationException {
         Precondition.notNull(path, PATH_IS_NULL);
         Precondition.notEmpty(path, PATH_IS_EMPTY);
-        Precondition.checkState(yamlPath != null, NO_DATA_LOADED);
+        Precondition.isTrue(yamlPath != null, NO_DATA_LOADED);
 
         path = path.trim();
 
@@ -172,7 +172,7 @@ public class Configuration {
     public Long getLong(String path, boolean isRequired) throws ConfigurationException {
         Precondition.notNull(path, PATH_IS_NULL);
         Precondition.notEmpty(path, PATH_IS_EMPTY);
-        Precondition.checkState(yamlPath != null, NO_DATA_LOADED);
+        Precondition.isTrue(yamlPath != null, NO_DATA_LOADED);
 
         path = path.trim();
 
@@ -208,7 +208,7 @@ public class Configuration {
     public String getString(String path, boolean isRequired) throws ConfigurationException {
         Precondition.notNull(path, PATH_IS_NULL);
         Precondition.notEmpty(path, PATH_IS_EMPTY);
-        Precondition.checkState(yamlPath != null, NO_DATA_LOADED);
+        Precondition.isTrue(yamlPath != null, NO_DATA_LOADED);
 
         path = path.trim();
 
@@ -244,7 +244,7 @@ public class Configuration {
     public String getHostOrIPAddress(String path, boolean isRequired) throws ConfigurationException {
         Precondition.notNull(path, PATH_IS_NULL);
         Precondition.notEmpty(path, PATH_IS_EMPTY);
-        Precondition.checkState(yamlPath != null, NO_DATA_LOADED);
+        Precondition.isTrue(yamlPath != null, NO_DATA_LOADED);
 
         path = path.trim();
 
@@ -280,7 +280,7 @@ public class Configuration {
     public File getReadableFile(String path, boolean isRequired) throws ConfigurationException {
         Precondition.notNull(path, PATH_IS_NULL);
         Precondition.notEmpty(path, PATH_IS_EMPTY);
-        Precondition.checkState(yamlPath != null, NO_DATA_LOADED);
+        Precondition.isTrue(yamlPath != null, NO_DATA_LOADED);
 
         path = path.trim();
 
