@@ -20,14 +20,16 @@ import org.devopology.common.precondition.Precondition;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Class to implement a LoggerFactory
  */
 public class LoggerFactory {
 
-    private static final LoggerFactory INSTANCE = new LoggerFactory();
+    private static final LoggerFactory SINGLETON = new LoggerFactory();
 
+    private static final Object LOCK = new Object();
     private Level defaultLevel = Level.INFO;
     private Map<String, Logger> loggerMap;
 
@@ -41,32 +43,47 @@ public class LoggerFactory {
     /**
      * Method get or a create a Logger
      *
-     * @param prefix
+     * @param name
      * @return Logger
      */
-    private Logger getOrCreateLogger(String prefix) {
-        Logger logger = loggerMap.get(prefix);
+    private Logger getOrCreateLogger(String name) {
+        Logger logger = null;
+
+        synchronized (LOCK) {
+            logger = loggerMap.get(name);
+        }
 
         if (logger == null) {
-            logger = new Logger(prefix);
-            logger.setLevel(defaultLevel);
-            loggerMap.put(prefix, logger);
+            logger = new Logger(name);
+
+            synchronized (LOCK) {
+                logger.setLevel(defaultLevel);
+                loggerMap.put(name, logger);
+            }
         }
 
         return logger;
     }
 
     private void adjustLevel(Level level) {
-        defaultLevel = level;
+        synchronized (LOCK) {
+            defaultLevel = level;
+        }
 
-        for (String key : loggerMap.keySet()) {
-            Logger logger = loggerMap.get(key);
-            logger.setLevel(level);
+        synchronized (LOCK) {
+            for (Map.Entry<String, Logger> entry : loggerMap.entrySet()) {
+                entry.getValue().setLevel(level);
+            }
         }
     }
 
     private void adjustLevel(String name, Level level) {
-        Logger logger = loggerMap.get(name);
+        Logger logger = null;
+
+        synchronized (LOCK) {
+            logger = loggerMap.get(name);
+        }
+
         if (logger != null) {
             logger.setLevel(level);
         }
@@ -91,9 +108,7 @@ public class LoggerFactory {
         Precondition.notNull(name, "prefix is null");
         Precondition.notEmpty(name, "prefix is empty");
 
-        synchronized (INSTANCE) {
-            return INSTANCE.getOrCreateLogger(name);
-        }
+        return SINGLETON.getOrCreateLogger(name);
     }
 
     /**
@@ -102,9 +117,7 @@ public class LoggerFactory {
      * @param level
      */
     public static void setLevel(Level level) {
-        synchronized (INSTANCE) {
-            INSTANCE.adjustLevel(level);
-        }
+        SINGLETON.adjustLevel(level);
     }
 
     /**
@@ -119,9 +132,7 @@ public class LoggerFactory {
 
         name = name.trim();
 
-        synchronized (INSTANCE) {
-            INSTANCE.adjustLevel(name, level);
-        }
+        SINGLETON.adjustLevel(name, level);
     }
 
     /**
@@ -134,9 +145,6 @@ public class LoggerFactory {
         Precondition.notNull(clazz, "class is null");
 
         String name = clazz.getName();
-
-        synchronized (INSTANCE) {
-            INSTANCE.adjustLevel(name, level);
-        }
+        SINGLETON.adjustLevel(name, level);
     }
 }

@@ -16,6 +16,8 @@
 
 package org.devopology.common.logger;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Class to implement a Logger
  */
@@ -23,21 +25,21 @@ public class Logger {
 
     private static final String LOG_FORMAT = "[%s] %s %s - %s";
 
-    private int level;
-    private String prefix;
+    private AtomicInteger level;
+    private String name;
 
     /**
      * Constructor
      *
-     * @param prefix
+     * @param name
      */
-    Logger(String prefix) {
-        this.prefix = prefix;
-        level = decode(Level.INFO);
+    Logger(String name) {
+        this.name = name;
+        this.level = new AtomicInteger(decode(Level.INFO));
     }
 
     public void setLevel(Level level) {
-        this.level = decode(level);
+        this.level.set(decode(level));
     }
 
     /**
@@ -83,8 +85,8 @@ public class Logger {
      */
     public void log(Level level, String message) {
         int levelInt = decode(level);
-        if (this.level >= levelInt) {
-            System.out.println(String.format(LOG_FORMAT, Thread.currentThread().getName(), level, prefix, message));
+        if (this.level.get() >= levelInt) {
+            System.out.println(String.format(LOG_FORMAT, Thread.currentThread().getName(), level, name, message));
             System.out.flush();
         }
     }
