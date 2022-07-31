@@ -81,7 +81,7 @@ public class JavaAgent {
             LOGGER.trace(String.format("resolving [%s]", SIMPLECLIENT_PKG));
 
             // Check that the agent jar contains the simpleclient package
-            Precondition.checkState(
+            Precondition.isTrue(
                     argentJar.containsKey(SIMPLECLIENT_PKG),
                     String.format("failed to resolve [%s] in [%s]", SIMPLECLIENT_PKG, agentJarFile));
 
@@ -92,7 +92,7 @@ public class JavaAgent {
             LOGGER.trace(String.format("resolving [%s]", EXPORTER_PKG));
 
             // Check that the agent jar contains the exporter package
-            Precondition.checkState(argentJar.containsKey(
+            Precondition.isTrue(argentJar.containsKey(
                     EXPORTER_PKG),
                     String.format("failed to resolve [%s] in [%s]", EXPORTER_PKG, agentJarFile));
 

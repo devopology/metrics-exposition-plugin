@@ -30,6 +30,13 @@ echo ""
 echo "    target/metrics-exporter-javaaagent-${VERSION}.jar"
 echo ""
 
+cp standalone/target/standalone-${VERSION}-jar-with-dependencies.jar target/metric-exporter-standalone-${VERSION}.jar
+
+echo "Final standalone jar..."
+echo ""
+echo "    target/metric-exporter-standalone-${VERSION}.jar"
+echo ""
+
 zip -q -j -9 temp/metrics-exporter-javaagent-${VERSION}.zip temp/metrics-exporter-javaagent-${VERSION}.jar temp/exporter.yml temp/generate-obfuscated-password.sh temp/generate-encrypted-password.sh
 
 cp temp/metrics-exporter-javaagent-${VERSION}.zip target/.

@@ -1,0 +1,56 @@
+---
+# Devopology metrics-exporter configuration
+exporter:
+  server:
+    host: 0.0.0.0
+    port: 12345
+    # optional
+    threads:
+      io: 4 # number of cores
+      worker: 10
+    caching:
+      enabled: false
+      # required if enabled is true
+      milliseconds: 10000
+    exports:
+      hotspot:
+        buffer-pools:
+          enabled: false
+        class-loading:
+          enabled: false
+        compilation:
+          enabled: false
+        garbage-collector:
+          enabled: false
+        memory-allocation:
+          enabled: false
+        memory-pools:
+          enabled: false
+        standard:
+          enabled: false
+        thread:
+          enabled: false
+        version-info:
+          enabled: false
+      jmx:
+        enabled: false
+    authentication:
+      basic:
+        enabled: true
+        # required if enabled is true
+        username: test
+        password: SHA512:s3JGD9ZbmdMPyWWAt2gA6cIfhS1A80mj:b37ab62fc2d075fa2a819a4cc96c720b772ce7b9d826638d4787a791861737e977081600ad7dbe85f005e5c3e63ac282fd2c6730cee9c72ece6c7fde28335b91
+    ssl:
+      enabled: true
+      # required if enabled is true
+      protocol: TLSv1.3
+      keystore:
+        filename: standalone/configuration/localhost.pkcs12
+        type: PKCS12
+        password: BASE64:NmU1dWx2cXFtYjloZGl2akE4M21BaEFJTTN1cTNGbXM6Y2hhbmdlaXQ=
+      certificate:
+        alias: localhost
+
+# Prometheus jmx-exporter configuration
+rules:
+  - pattern: ".*"

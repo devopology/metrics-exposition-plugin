@@ -20,6 +20,7 @@
         <module>common</module>
         <module>exporter</module>
         <module>javaagent</module>
+        <module>standalone</module>
         <module>test-application</module>
     </modules>
 
