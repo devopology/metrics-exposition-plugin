@@ -1,5 +1,5 @@
-# javaagfent
+# javaagent
 
-Code to implement the Java agent
+Code to implement the javaagent
 
-External dependencies allowed
+No external dependencies allowed
