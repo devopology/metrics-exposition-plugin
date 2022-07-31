@@ -18,7 +18,6 @@
     <modules>
         <module>simpleclient</module>
         <module>common</module>
-        <module>exporter-common</module>
         <module>exporter</module>
         <module>javaagent</module>
         <module>test-application</module>

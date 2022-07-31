@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.devopology.exporter.common.collector;
+package org.devopology.metrics.exporter.collector;
 
 import io.prometheus.client.Collector;
 import org.devopology.common.precondition.Precondition;

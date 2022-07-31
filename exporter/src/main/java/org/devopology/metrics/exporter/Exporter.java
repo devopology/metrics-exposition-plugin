@@ -42,7 +42,7 @@ import io.undertow.server.HttpHandler;
 import org.devopology.common.logger.Logger;
 import org.devopology.common.logger.LoggerFactory;
 import org.devopology.common.precondition.Precondition;
-import org.devopology.exporter.common.collector.CollectorWrapper;
+import org.devopology.metrics.exporter.collector.CollectorWrapper;
 import org.devopology.metrics.exporter.undertow.handler.DispatchingHttpHandler;
 import org.devopology.metrics.exporter.undertow.security.UsernameSaltedPasswordIdentityManager;
 import org.xnio.OptionMap;

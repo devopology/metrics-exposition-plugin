@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.devopology.exporter.common.yamlpath;
+package org.devopology.metrics.exporter.yamlpath;
 
 import com.google.gson.Gson;
 import com.jayway.jsonpath.DocumentContext;

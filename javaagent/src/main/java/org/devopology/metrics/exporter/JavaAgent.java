@@ -16,9 +16,8 @@
 
 package org.devopology.metrics.exporter;
 
-import org.devopology.common.classloader.JarClassLoader;
+import org.devopology.common.classloader.ChildFirstJarClassLoader;
 import org.devopology.common.jar.Jar;
-import org.devopology.common.jar.BytesJarEntry;
 import org.devopology.common.logger.Logger;
 import org.devopology.common.logger.LoggerFactory;
 import org.devopology.common.precondition.Precondition;
@@ -78,30 +77,37 @@ public class JavaAgent {
             Jar argentJar = new Jar();
             argentJar.load(agentJarFile);
 
-            // Load the embedded jars
+            // Load the embedded simpleclient package
             LOGGER.trace(String.format("resolving [%s]", SIMPLECLIENT_PKG));
-            BytesJarEntry simpleClientJarEntry = argentJar.get(SIMPLECLIENT_PKG);
 
-            LOGGER.trace(String.format("resolving [%s]", EXPORTER_PKG));
-            BytesJarEntry exporterJarEntry = argentJar.get(EXPORTER_PKG);
-
-            // Validate the agent jar has an embedded "simpleclient.pkg"
+            // Check that the agent jar contains the simpleclient package
             Precondition.checkState(
-                    simpleClientJarEntry != null,
+                    argentJar.containsKey(SIMPLECLIENT_PKG),
                     String.format("failed to resolve [%s] in [%s]", SIMPLECLIENT_PKG, agentJarFile));
 
-            // Validate the agent jar has an embedded "exporter.pkg"
-            Precondition.checkState(
-                    exporterJarEntry != null,
+            // Load the embedded simpleclient package
+            Jar simpleClientJar = new Jar();
+            simpleClientJar.load(new JarInputStream(argentJar.get(SIMPLECLIENT_PKG).getInputStream()));
+
+            LOGGER.trace(String.format("resolving [%s]", EXPORTER_PKG));
+
+            // Check that the agent jar contains the exporter package
+            Precondition.checkState(argentJar.containsKey(
+                    EXPORTER_PKG),
                     String.format("failed to resolve [%s] in [%s]", EXPORTER_PKG, agentJarFile));
 
-            // Load the simpleclient jar
-            Jar simpleClientJar = new Jar();
-            simpleClientJar.load(new JarInputStream(simpleClientJarEntry.getInputStream()));
-
-            // Load the exporter jar
+            // Load the embedded exporter package
             Jar exporterJar = new Jar();
-            exporterJar.load(new JarInputStream(exporterJarEntry.getInputStream()));
+            exporterJar.load(new JarInputStream(argentJar.get(EXPORTER_PKG).getInputStream()));
+
+            /*
+             * Set up the classloader chaining for isolation
+             *
+             * parent classloader
+             *   ApplicationClassLoader (agent classes)
+             *     ChildFirstJarClassLoader (simpleclient classes) (optional)
+             *       ChildFirstJarClassLoader (exporter classes)
+             */
 
             // Get the current classloader
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -111,19 +117,18 @@ public class JavaAgent {
                 classLoader.loadClass(IO_PROMETHEUS_CLIENT_COLLECTOR_REGISTRY_CLASSNAME);
             } catch (ClassNotFoundException e) {
                 // The CollectorRegistry class wasn't found
-                // Hook in the classloader for the embedded simpleclient classes
-
                 LOGGER.info(String.format("simpleclient libraries not found, using embedded simplelclient libraries"));
                 LOGGER.info(String.format("NOTE: if your application requires the simpleclient libraries, you will see a ClassNotFoundException"));
 
-                classLoader = new JarClassLoader(simpleClientJar, classLoader);
+                // Add the classloader for the embedded simpleclient classes
+                classLoader = new ChildFirstJarClassLoader(simpleClientJar, classLoader);
                 classLoader.loadClass(IO_PROMETHEUS_CLIENT_COLLECTOR_REGISTRY_CLASSNAME);
             }
 
-            // Hook in the classloader for the embedded exporter classes
-            classLoader = new JarClassLoader(exporterJar, classLoader);
+            // Added classloader for the embedded exporter classes
+            classLoader = new ChildFirstJarClassLoader(exporterJar, classLoader);
 
-            // Start the Exporter via the proxy
+            // Start the Exporter via reflection using the proxy
             exporterProxy = new ExporterProxy(classLoader);
             exporterProxy.start(javaAgentArguments.getYamlConfigurationFile());
 

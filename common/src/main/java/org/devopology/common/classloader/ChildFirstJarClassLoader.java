@@ -14,23 +14,29 @@
  * limitations under the License.
  */
 
-package org.devopology.exporter.common.yamlpath;
+package org.devopology.common.classloader;
 
-public class PathNotFoundException extends Exception {
+import org.devopology.common.jar.Jar;
+import org.devopology.common.precondition.Precondition;
 
-    private String path;
+import java.io.IOException;
 
-    public PathNotFoundException(String path, String message) {
-        super(message);
-        this.path = path;
-    }
+/**
+ * Class to implement a child-first Jar classloader
+ */
+public class ChildFirstJarClassLoader extends ChildFirstJarInputStreamClassLoader {
 
-    public PathNotFoundException(String path, String message, Throwable throwable) {
-        super(message, throwable);
-        this.path = path;
-    }
+    /**
+     * Constructor
+     *
+     * @param jar
+     * @param parent
+     */
+    public ChildFirstJarClassLoader(Jar jar, ClassLoader parent) throws IOException {
+        super(parent);
 
-    public String getPath() {
-        return path;
+        Precondition.notNull(jar, "jar is null");
+
+        this.jar = jar;
     }
 }

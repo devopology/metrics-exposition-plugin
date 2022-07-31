@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.devopology.exporter.common.tools;
+package org.devopology.metrics.exporter.tools;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;

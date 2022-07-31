@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.devopology.exporter.common.converter;
+package org.devopology.metrics.exporter.converter;
 
 import com.google.common.net.InetAddresses;
 import com.google.common.net.InternetDomainName;

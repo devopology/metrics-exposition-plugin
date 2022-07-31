@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
 /**
@@ -40,7 +39,7 @@ public class Jar {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Jar.class);
 
-    private Map<String, BytesJarEntry> jarEntryMap;
+    private Map<String, JarEntry> jarEntryMap;
 
     /**
      * Constructor
@@ -77,7 +76,7 @@ public class Jar {
         clear();
 
         while (true) {
-            JarEntry jarEntry = jarInputStream.getNextJarEntry();
+            java.util.jar.JarEntry jarEntry = jarInputStream.getNextJarEntry();
             if (jarEntry == null) {
                 break;
             }
@@ -97,7 +96,7 @@ public class Jar {
                 }
 
                 byte[] jarEntryBytes = byteArrayOutputStream.toByteArray();
-                jarEntryMap.put(jarEntry.getName(), new BytesJarEntry(jarEntry, jarEntryBytes));
+                jarEntryMap.put(jarEntry.getName(), new JarEntry(jarEntry, jarEntryBytes));
             }
         }
     }
@@ -125,7 +124,7 @@ public class Jar {
      * @param key
      * @return
      */
-    public BytesJarEntry get(String key) {
+    public JarEntry get(String key) {
         return jarEntryMap.get(key);
     }
 
@@ -142,7 +141,7 @@ public class Jar {
      * Method to get the Set of all entries
      * @return
      */
-    public Set<Map.Entry<String, BytesJarEntry>> entrySet() {
+    public Set<Map.Entry<String, JarEntry>> entrySet() {
         return jarEntryMap.entrySet();
     }
 

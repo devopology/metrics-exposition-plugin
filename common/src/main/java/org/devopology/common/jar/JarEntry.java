@@ -17,13 +17,16 @@
 package org.devopology.common.jar;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.jar.JarEntry;
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Properties;
 
 /**
- * Class to implement a BytesJarEntry that contains the entries bytes
+ * Class to implement a JarEntry that contains additional functionality
  */
-public class BytesJarEntry extends JarEntry {
+public class JarEntry extends java.util.jar.JarEntry {
 
     private byte[] bytes;
 
@@ -33,13 +36,13 @@ public class BytesJarEntry extends JarEntry {
      * @param jarEntry
      * @param bytes
      */
-    BytesJarEntry(JarEntry jarEntry, byte[] bytes) {
+    JarEntry(java.util.jar.JarEntry jarEntry, byte[] bytes) {
         super(jarEntry.getName());
         this.bytes = bytes;
     }
 
     /**
-     * Method to get an entries size in bytes
+     * Method to get an entry's size in bytes
      *
      * @return
      */
@@ -49,16 +52,7 @@ public class BytesJarEntry extends JarEntry {
     }
 
     /**
-     * Method to get an entries bytes
-     *
-     * @return
-     */
-    public byte[] getBytes() {
-        return bytes;
-    }
-
-    /**
-     * Method to get an InputStream to the entry's bytes
+     * Method to get an InputStream to the entry
      *
      * @return
      */
