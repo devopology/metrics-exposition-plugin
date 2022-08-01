@@ -82,16 +82,15 @@ public class UsernameSaltedPasswordIdentityManager implements IdentityManager {
         }
 
         if (credential instanceof PasswordCredential) {
-            String password = new String(((PasswordCredential) credential).getPassword());
-            if (password != null) {
-                password = password.trim();
-            }
-
-            if (password.length() > 0) {
-                String salt = this.encryptedPassword.getSalt();
-                EncryptedPassword encryptedPassword = new EncryptedPassword(salt, password);
-                if (this.encryptedPassword.equals(encryptedPassword)) {
-                    return new SimpleAccount(username, ROLES);
+            char[] passwordCharacters = ((PasswordCredential) credential).getPassword();
+            if (passwordCharacters != null) {
+                String password = new String(passwordCharacters).trim();
+                if (password.length() > 0) {
+                    String salt = this.encryptedPassword.getSalt();
+                    EncryptedPassword encryptedPassword = new EncryptedPassword(salt, password);
+                    if (this.encryptedPassword.equals(encryptedPassword)) {
+                        return new SimpleAccount(username, ROLES);
+                    }
                 }
             }
         }
