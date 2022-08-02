@@ -17,7 +17,7 @@ cp configuration/exporter.yml temp/.
 cp configuration/localhost.pkcs12 temp/.
 cp temp/javaagent-${VERSION}.jar temp/metrics-exporter-javaagent-${VERSION}.jar
 cp generate-obfuscated-password.sh temp/.
-cp generate-encrypted-password.sh temp/.
+cp generate-hashed-password.sh temp/.
 
 zip -q -j -9 temp/metrics-exporter-javaagent-${VERSION}.jar temp/exporter.pkg
 zip -q -j -9 temp/metrics-exporter-javaagent-${VERSION}.jar temp/simpleclient.pkg
@@ -37,7 +37,7 @@ echo ""
 echo "    target/metric-exporter-standalone-${VERSION}.jar"
 echo ""
 
-zip -q -j -9 temp/metrics-exporter-javaagent-${VERSION}.zip temp/metrics-exporter-javaagent-${VERSION}.jar temp/exporter.yml temp/generate-obfuscated-password.sh temp/generate-encrypted-password.sh
+zip -q -j -9 temp/metrics-exporter-javaagent-${VERSION}.zip temp/metrics-exporter-javaagent-${VERSION}.jar temp/exporter.yml temp/generate-obfuscated-password.sh temp/generate-hashed-password.sh
 
 cp temp/metrics-exporter-javaagent-${VERSION}.zip target/.
 
@@ -46,7 +46,7 @@ echo ""
 echo "    target/metrics-exporter-javaagent-${VERSION}.zip"
 echo ""
 
-tar -cf temp/metrics-exporter-javaagent-${VERSION}.tar.gz -C temp metrics-exporter-javaagent-${VERSION}.jar exporter.yml generate-obfuscated-password.sh generate-encrypted-password.sh --owner=0 --group=0
+tar -cf temp/metrics-exporter-javaagent-${VERSION}.tar.gz -C temp metrics-exporter-javaagent-${VERSION}.jar exporter.yml generate-obfuscated-password.sh generate-hashed-password.sh --owner=0 --group=0
 
 cp temp/metrics-exporter-javaagent-${VERSION}.tar.gz target/.
 

@@ -17,4 +17,4 @@ fi
 
 SALTED_PASSWORD_SHA1=`echo -n "$SALT:$PASSWORD" | sha512sum | cut -d " " -f 1`
 
-echo "encrypted password: SHA512:$SALT:$SALTED_PASSWORD_SHA1"
+echo "hashed password: SHA512:$SALT:$SALTED_PASSWORD_SHA1"
