@@ -2,7 +2,7 @@
 
 Project to expose JMX and / or Prometheus metrics in a Prometheus or OpenMetrics format via HTTP/HTTPS.
 
-Can be used as either a Java agent (`-javaagnet`) or as a standalone application (EXPIREMENTAL) to remotely collect JMX metriccs.
+Can be used as either a Java agent (`-javaagnet`) or as a standalone application (EXPIREMENTAL) to remotely collect JMX metrics.
 
 ## Features
 
