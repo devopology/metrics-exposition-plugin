@@ -34,7 +34,14 @@ Can be used as either a Java agent (`-javaagnet`) or as a standalone application
 ## Supported modes
 
 ### Java agent
-### standalone JMX exporter
+
+- most common usage
+- see `./run-test-application.sh`
+
+### Standalone JMX exporter
+
+- experimental
+- see `./run-standalone.sh`
 
 ## Potential future features
 
@@ -219,10 +226,10 @@ __PRs__
 
 - [https://github.com/prometheus/client_java](https://github.com/prometheus/client_java)
 - [https://github.com/prometheus/jmx_exporter](https://github.com/prometheus/jmx_exporter)
-- [https://github.com/undertow-io/undertow](https://github.com/undertow-io/undertow)
 
 ## Notice
 
 - Prometheus and associated projects (`simpleclient` and `jmx_exporter`) are © Prometheus Authors 2014-2022
+
 
 - This project is __not__ associated, supported, or endorsed by the Prometheus project.
