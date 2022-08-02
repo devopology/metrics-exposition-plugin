@@ -1,0 +1,14 @@
+on:
+  release:
+    types: [created]
+name: Build
+jobs:
+  generate:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@main
+    - name: Build
+      uses: skx/github-action-build@master
+      with:
+        builder: .github/build
