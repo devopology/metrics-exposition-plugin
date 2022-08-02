@@ -45,7 +45,7 @@ Can be used as either a Java agent (`-javaagnet`) or as a standalone application
 
 ## FAQ
 
-  - [https://github.com/devopology/metrics-exporter/FAQ.md](https://github.com/devopology/metrics-exporter/FAQ.md)
+  - [https://github.com/devopology/metrics-exporter/blob/main/FAQ.md](https://github.com/devopology/metrics-exporter/blob/main/FAQ.md)
 
 ## Typical Linux installation
 
