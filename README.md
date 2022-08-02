@@ -15,8 +15,13 @@ Can be used as either a Java agent (`-javaagnet`) or as a standalone application
   - single user with a username / password
   - hashed user password configuration (no clear-text)
 - server side metric caching support
-  - server controlled collection interval
+  ‐ throttles a mis-configured / overzealous collecting application
+  ‐ throttles collection when the application being monitoring is slow
 - fine-grained HotSport metrics configuration
+  - ability to enabled / disable collection of various HotSpot metrics individually
+- JMX metrics support
+  - uses a modified configuration format based on the standard Prometheus "jmx_exporter" YAML configuration format
+  - [https://github.com/prometheus/jmx_exporter/tree/master/example_configs](https://github.com/prometheus/jmx_exporter/tree/master/example_configs)
 - isolated exporter code from application code
 - modern HTTP server
   - Uses Undertow 2.2.x
