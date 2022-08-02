@@ -28,13 +28,13 @@ import org.devopology.common.sha.SHA;
  * <p>
  * https://hashcat.net/hashcat/
  */
-public class EncryptedPassword {
+public class HashedPassword {
 
     private static final String SHA_512 = "SHA512";
     private static final int MINIMUM_SALT_LENGTH = 32;
 
     private String salt;
-    private String encryptedPassword;
+    private String hashedPassword;
 
     /**
      * Constructor
@@ -42,7 +42,7 @@ public class EncryptedPassword {
      * @param salt
      * @param password
      */
-    public EncryptedPassword(String salt, String password) {
+    public HashedPassword(String salt, String password) {
         Precondition.notNull(salt, "salt is null");
         Precondition.notEmpty(salt, "salt is empty");
         Precondition.notNull(password, "password is null");
@@ -69,36 +69,36 @@ public class EncryptedPassword {
         stringBuilder.append(":");
         stringBuilder.append(SHA.sha512Hash(salt + ":" + password));
 
-        encryptedPassword = stringBuilder.toString();
+        hashedPassword = stringBuilder.toString();
     }
 
     /**
      * Constructor
      *
-     * @param encryptedPassword
+     * @param hashedPassword
      */
-    public EncryptedPassword(String encryptedPassword) {
-        Precondition.notNull(encryptedPassword, "encryptedPassword is null");
-        Precondition.notEmpty(encryptedPassword, "encryptedPassword is empty");
+    public HashedPassword(String hashedPassword) {
+        Precondition.notNull(hashedPassword, "hashedPassword is null");
+        Precondition.notEmpty(hashedPassword, "hashedPassword is empty");
 
-        encryptedPassword = encryptedPassword.trim();
+        hashedPassword = hashedPassword.trim();
 
-        String[] tokens = encryptedPassword.split(":");
+        String[] tokens = hashedPassword.split(":");
 
         if (tokens.length != 3) {
-            throw new IllegalArgumentException(String.format("invalid encrypted password format"));
+            throw new IllegalArgumentException(String.format("invalid hashed password format"));
         }
 
         if (!SHA_512.equals(tokens[0])) {
-            throw new IllegalArgumentException(String.format("invalid encrypted password format"));
+            throw new IllegalArgumentException(String.format("invalid hashed password format"));
         }
 
         if (tokens[1].length() != MINIMUM_SALT_LENGTH) {
-            throw new IllegalArgumentException(String.format("invalid encrypted password format"));
+            throw new IllegalArgumentException(String.format("invalid hashed password format"));
         }
 
         this.salt = tokens[1];
-        this.encryptedPassword = encryptedPassword;
+        this.hashedPassword = hashedPassword;
     }
 
     /**
@@ -115,8 +115,8 @@ public class EncryptedPassword {
      *
      * @return
      */
-    public String getEncryptedPassword() {
-        return encryptedPassword;
+    public String getHashedPassword() {
+        return hashedPassword;
     }
 
     /**
@@ -127,9 +127,9 @@ public class EncryptedPassword {
      */
     @Override
     public boolean equals(Object object) {
-        if (EncryptedPassword.class.isInstance(object)) {
-            EncryptedPassword encryptedPassword = (EncryptedPassword) object;
-            return this.encryptedPassword.equals(encryptedPassword.encryptedPassword);
+        if (HashedPassword.class.isInstance(object)) {
+            HashedPassword hashedPassword = (HashedPassword) object;
+            return this.hashedPassword.equals(hashedPassword.hashedPassword);
         }
 
         return false;

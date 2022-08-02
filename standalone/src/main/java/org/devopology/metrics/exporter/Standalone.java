@@ -28,10 +28,6 @@ import java.io.File;
  */
 public class Standalone {
 
-    private static final String METRICS_EXPORTER_STANDALONE = "metrics_exporter_standalone_version";
-    private static final String METRICS_EXPORTER_STANDALONE_HELP = "metrics-exporter-standalone version";
-    private static final String VERSION = "version";
-
     private static final Logger LOGGER = LoggerFactory.getLogger(Standalone.class);
 
     public static void main(String[] args) throws Exception {
@@ -53,10 +49,8 @@ public class Standalone {
             Precondition.exists(yamlConfigurationFile, String.format("file [%s] isn't a file", yamlConfigurationFile));
             Precondition.exists(yamlConfigurationFile, String.format("file [%s] isn't readable", yamlConfigurationFile));
 
+            System.setProperty("exporter.mode", "standalone");
             new Exporter().start(yamlConfigurationFile);
-
-            Info info = Info.build().name(METRICS_EXPORTER_STANDALONE).help(METRICS_EXPORTER_STANDALONE_HELP).register();
-            info.info(VERSION, Version.getVersion());
 
             LOGGER.info("running");
 

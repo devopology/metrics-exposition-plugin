@@ -18,6 +18,7 @@ package org.devopology.metrics.exporter;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.Info;
 import io.prometheus.client.hotspot.BufferPoolsExports;
 import io.prometheus.client.hotspot.ClassLoadingExports;
 import io.prometheus.client.hotspot.CompilationExports;
@@ -30,21 +31,22 @@ import io.prometheus.client.hotspot.VersionInfoExports;
 import io.prometheus.jmx.JmxCollector;
 import io.undertow.CustomUndertow;
 import io.undertow.UndertowOptions;
-import io.undertow.security.api.AuthenticationMechanism;
-import io.undertow.security.api.AuthenticationMode;
-import io.undertow.security.handlers.AuthenticationCallHandler;
-import io.undertow.security.handlers.AuthenticationConstraintHandler;
-import io.undertow.security.handlers.AuthenticationMechanismsHandler;
-import io.undertow.security.handlers.SecurityInitialHandler;
 import io.undertow.security.idm.IdentityManager;
-import io.undertow.security.impl.BasicAuthenticationMechanism;
 import io.undertow.server.HttpHandler;
 import org.devopology.common.logger.Logger;
 import org.devopology.common.logger.LoggerFactory;
 import org.devopology.common.password.ObfuscatedPassword;
 import org.devopology.common.precondition.Precondition;
 import org.devopology.metrics.exporter.collector.CollectorWrapper;
-import org.devopology.metrics.exporter.undertow.handler.DispatchingHttpHandler;
+import org.devopology.metrics.exporter.resources.Resources;
+import org.devopology.metrics.exporter.template.Template;
+import org.devopology.metrics.exporter.undertow.handler.BasicAuthenticationHttpHandler;
+import org.devopology.metrics.exporter.undertow.handler.DispatcherHttpHandler;
+import org.devopology.metrics.exporter.undertow.handler.FaviconHttpHandler;
+import org.devopology.metrics.exporter.undertow.handler.HealthyHttpHandler;
+import org.devopology.metrics.exporter.undertow.handler.StaticContentHttpHandler;
+import org.devopology.metrics.exporter.undertow.handler.predicate.RequestPathExact;
+import org.devopology.metrics.exporter.undertow.handler.MetricsHttpHandler;
 import org.devopology.metrics.exporter.undertow.security.UsernameSaltedPasswordIdentityManager;
 import org.xnio.OptionMap;
 import org.xnio.Options;
@@ -58,11 +60,12 @@ import javax.net.ssl.SSLContext;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -73,22 +76,45 @@ import java.util.Map;
 public class Exporter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Exporter.class);;
+    private static final String CRLF = "\r\n";
 
-    private Configuration configuration;
+    private static final String METRICS_EXPORTER_VERSION = "metrics_exporter_version";
+    private static final String METRICS_EXPORTER_VERSION_HELP = "metrics-exporter version";
+    private static final String METRICS_EXPORTER_MODE = "metrics_exporter_mode";
+    private static final String METRICS_EXPORTER_MODE_HELP = "metrics-exporter mode";
+
+    private static final String VERSION = "version";
+
+    enum Mode { STANDALONE, AGENT }
+
+    private Mode mode;
+    private Resources resources;
     private CollectorRegistry collectorRegistry;
     private List<Collector> collectorList;
+    private Configuration configuration;
     private CustomUndertow undertow;
 
     /**
      * Constructor
      */
     public Exporter() {
+        resources = new Resources();
         collectorRegistry = CollectorRegistry.defaultRegistry;
         collectorList = new ArrayList<>();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (undertow != null) {
+                try {
+                    undertow.stop();
+                } catch (Exception e) {
+                    // DO NOTHING
+                }
+            }
+        }));
     }
 
     /**
-     * Method to start (called via reflection)
+     * Method to start the Exporter (called via reflection)
      *
      * @param yamlConfigurationFile
      * @throws Exception
@@ -101,11 +127,32 @@ public class Exporter {
         System.setProperty("org.jboss.logging.provider", "slf4j");
 
         try {
-            LOGGER.info(String.format("%s", Version.getVersion()));
+            String version = Version.getVersion();
+            LOGGER.info(String.format("%s", version));
 
+            // Set up metrics exporter version info metric
+            Info metricsExporterVersionInfo =
+                    Info.build().name(METRICS_EXPORTER_VERSION).help(METRICS_EXPORTER_VERSION_HELP).register();
+
+            metricsExporterVersionInfo.info("version", version);
+
+            // Set up metrics exporter version mode metric
+            Info metricsExporterModeInfo =
+                    Info.build().name(METRICS_EXPORTER_MODE).help(METRICS_EXPORTER_MODE_HELP).register();
+
+            if ("standalone".equals(System.getProperty("exporter.mode"))) {
+                mode = Mode.STANDALONE;
+                metricsExporterModeInfo.info("mode", "standalone");
+            } else {
+                mode = Mode.AGENT;
+                metricsExporterModeInfo.info("mode", "agent");
+            }
+
+            // Create and load configuration
             configuration = new Configuration();
             configuration.load(yamlConfigurationFile);
 
+            // Configure exports
             configureExports();
 
             String serverHost = configuration.getString(ConfigurationPath.EXPORTER_SERVER_HOST_PATH);
@@ -118,28 +165,29 @@ public class Exporter {
             LOGGER.info(String.format("Undertow host [%s]", serverHost));
             LOGGER.info(String.format("Undertow port [%s]", serverPort));
 
+            // Create the Undertow builder
             CustomUndertow.Builder undertowBuilder = CustomUndertow.builder();
             undertowBuilder.setServerOption(UndertowOptions.ENABLE_HTTP2, true);
 
             Integer ioThreads = configuration.getInteger(ConfigurationPath.EXPORTER_SERVER_THREADS_IO_PATH, false);
-            if (ioThreads != null) {
-                if (ioThreads < 1) {
-                    throw new ConfigurationException(String.format("io threads must be greater >= %d", 1));
-                }
+            if ((ioThreads != null) && (ioThreads < 1)) {
+                throw new ConfigurationException(String.format("io threads must be greater >= %d", 1));
+            }
 
+            if (ioThreads != null) {
                 LOGGER.info(String.format("Undertow IO threads [%d]" , ioThreads));
             }
 
             Integer workerThreads = configuration.getInteger(ConfigurationPath.EXPORTER_SERVER_THREADS_WORKER_PATH, false);
-            if (workerThreads != null) {
-                if (workerThreads < 1) {
-                    throw new ConfigurationException(String.format("worked threads must be greater >= %d", 1));
-                }
-
-                LOGGER.info(String.format("Undertow worker threads [%d]" , workerThreads));
+            if ((workerThreads != null) && (workerThreads < 1)) {
+                throw new ConfigurationException(String.format("worked threads must be greater >= %d", 1));
             }
 
-            // TODO if server host is a validate domain name, but unknown Undertow will throw an exception
+            if (workerThreads != null) {
+                LOGGER.info(String.format("Undertow worker threads [%d]", workerThreads));
+            }
+
+            // TODO if server host is a valid domain name, but unknown Undertow will throw an exception
 
             Boolean isSSLEnabled = configuration.getBoolean(ConfigurationPath.EXPORTER_SERVER_SSL_ENABLED_PATH);
             LOGGER.info(String.format("Undertow SSL/TLS enabled [%b]", isSSLEnabled));
@@ -167,7 +215,32 @@ public class Exporter {
                 cacheMilliseconds = configuration.getLong(ConfigurationPath.EXPORTER_SERVER_CACHING_MILLISECONDS_PATH);
             }
 
-            HttpHandler httpHandler = new DispatchingHttpHandler(isCachingEnabled, cacheMilliseconds);
+            // Set up the HttpHandler handling
+            DispatcherHttpHandler dispatcherHttpHandler = new DispatcherHttpHandler();
+
+            // Set up the HttpHandler for "/favicon.ico" (404 NOT FOUND)
+            dispatcherHttpHandler.addHttpHandler(new RequestPathExact("/favicon.ico"), new FaviconHttpHandler());
+
+            // Set up the HttpHandler for "/-/healthy" and "/-/health"
+            dispatcherHttpHandler.addHttpHandler(
+                    new RequestPathExact("/-/healthy").or(new RequestPathExact("/-/health")), new HealthyHttpHandler());
+
+            // Set up the HttpHandler for "/-/information"
+            Template template = new Template(
+                    resources.getResourceAsString("/information..html", StandardCharsets.UTF_8));
+
+            Map<String, String> values = new HashMap<>();
+            values.put("version", Version.getVersion());
+
+            dispatcherHttpHandler.addHttpHandler(
+                    new RequestPathExact("/-/information"),
+                    new StaticContentHttpHandler(200, "text/html", template.merge(values)));
+
+            // Set up the default HttpHandler (metrics output)
+            MetricsHttpHandler metricsHttpHandler = new MetricsHttpHandler(isCachingEnabled, cacheMilliseconds);
+            dispatcherHttpHandler.setDefaultHttpHandler(metricsHttpHandler);
+
+            HttpHandler httpHandler = dispatcherHttpHandler;
 
             Boolean isBasicAuthenticationEnabled = configuration.getBoolean(ConfigurationPath.EXPORTER_SERVER_AUTHENTICATION_BASIC_ENABLED_PATH);
             LOGGER.info(String.format("Undertow BASIC authentication enabled [%b]", isBasicAuthenticationEnabled));
@@ -179,35 +252,26 @@ public class Exporter {
                         new UsernameSaltedPasswordIdentityManager(
                             basicAuthenticationUsername, basicAuthenticationSaltedPassword);
 
-                httpHandler = addSecurity(httpHandler, identityManager);
+                httpHandler = new BasicAuthenticationHttpHandler(identityManager, dispatcherHttpHandler);
             }
 
             if (isCachingEnabled) {
                 LOGGER.info(String.format("caching enabled [%b]", isCachingEnabled));
             }
 
+            // Set the Undertow HttpHandler
             undertowBuilder.setHandler(httpHandler);
-
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                if (undertow != null) {
-                    try {
-                        undertow.stop();
-                    } catch (Exception e) {
-                        // DO NOTHING
-                    }
-                }
-            }));
 
             LOGGER.info("Undertow starting");
 
-            // Create the Xnio class directly due to issue
-            // ClassNotfoundExceptions in the core Undertow
-            // implementation for our use case
+            // Create the Xnio instance directly due to a ClassNotFoundException
+            // in the core Undertow implementation for our use case
             Xnio xnio = new NioXnioProvider().getInstance();
             undertowBuilder.setXnio(xnio);
 
             // Create the XnioWorker options
             OptionMap.Builder xnioWorkerOptionMapBuilder = OptionMap.builder();
+
             xnioWorkerOptionMapBuilder
                     .set(Options.CONNECTION_HIGH_WATER, 100)
                     .set(Options.CONNECTION_LOW_WATER, 100)
@@ -223,17 +287,19 @@ public class Exporter {
                 xnioWorkerOptionMapBuilder.set(Options.WORKER_TASK_MAX_THREADS, ioThreads);
             }
 
-            // Create the XnioWorker directly
+            // Create the XnioWorker instance
             XnioWorker xnioWorker = xnio.createWorker(xnioWorkerOptionMapBuilder.getMap());
             undertowBuilder.setWorker(xnioWorker);
 
+            // Build and start the Undertow instance
             undertow = undertowBuilder.build();
-
             undertow.start();
 
             LOGGER.info("Undertow running");
             LOGGER.info("running");
         } catch (Exception e) {
+            LOGGER.error("Undertow stopping");
+
             if (undertow != null) {
                 try {
                     undertow.stop();
@@ -242,21 +308,26 @@ public class Exporter {
                 }
             }
 
+            LOGGER.info("Undertow stopped");
+
             throw e;
         }
     }
 
     /**
-     * Method to stop (called via reflection)
+     * Method to stop the Exporter (called via reflection)
      */
     public synchronized void stop() {
         LOGGER.info("stopping");
-
         cleanup();
-
         LOGGER.info("stopped");
     }
 
+    /**
+     * Method to configure exports
+     *
+     * @throws Exception
+     */
     private void configureExports() throws Exception {
         Boolean isHotSpotBufferPoolsExportsEnabled = configuration.getBoolean(ConfigurationPath.EXPORTER_SERVER_EXPORTS_HOTSPOT_BUFFER_POOLS_ENABLED_PATH);
         LOGGER.info(String.format("HotSpot buffer-pools exports enabled [%b]", isHotSpotBufferPoolsExportsEnabled));
@@ -315,14 +386,21 @@ public class Exporter {
         Boolean isJMXExportsEnabled = configuration.getBoolean(ConfigurationPath.EXPORTER_SERVER_EXPORTS_JMX_ENABLED_PATH);
         LOGGER.info(String.format("JMX exports enabled [%b]", isJMXExportsEnabled));
         if (isJMXExportsEnabled) {
-            Collector collector = new JmxCollector(configuration.getYamlConfigurationFile(), JmxCollector.Mode.AGENT);
+            JmxCollector.Mode jmxCollectorMode = JmxCollector.Mode.AGENT;
+            if (mode == Mode.STANDALONE) {
+                jmxCollectorMode = JmxCollector.Mode.STANDALONE;
+            }
+
+            // Create the JMXExporter
+            Collector collector = new JmxCollector(configuration.getYamlConfigurationFile(), jmxCollectorMode);
 
             /**
              * Handle "startDelaySeconds" as a special case.
              * <p>
              * Collection of ALL metrics fails if "startDelaySeconds" is configuration in the JmxExporter.
              * <p></p>
-             * In this scenario, we create a wrapper class to handle the JmxExporter behavior.
+             * In this scenario, we create a wrapper class to handle the JmxExporter behavior,
+             * returning other metrics before the JMX exporter is ready
              */
             int startDelaySeconds = 0;
             Map<String, ?> yamlMap2 = new Yaml().load(new FileReader(configuration.getYamlConfigurationFile()));
@@ -342,7 +420,11 @@ public class Exporter {
         }
     }
 
+    /**
+     * Method to clean up resources
+     */
     private void cleanup() {
+        // Stop the Undertow instance
         if (undertow != null) {
             try {
                 undertow.stop();
@@ -353,6 +435,7 @@ public class Exporter {
             undertow = null;
         }
 
+        // Remove all collectors that we registered
         if (collectorList != null) {
             for (Collector collector : collectorList) {
                 collectorRegistry.unregister(collector);
@@ -404,21 +487,5 @@ public class Exporter {
                 new SecureRandom());
 
         return sslContext;
-    }
-
-    /**
-     * Method to add security to an HttpHandler
-     *
-     * @param handler
-     * @param identityManager
-     * @return
-     */
-    private static HttpHandler addSecurity(HttpHandler handler, IdentityManager identityManager) {
-        handler = new AuthenticationCallHandler(handler);
-        handler = new AuthenticationConstraintHandler(handler);
-        List<AuthenticationMechanism> mechanisms = Collections.<AuthenticationMechanism>singletonList(new BasicAuthenticationMechanism("/"));
-        handler = new AuthenticationMechanismsHandler(handler, mechanisms);
-        handler = new SecurityInitialHandler(AuthenticationMode.PRO_ACTIVE, identityManager, handler);
-        return handler;
     }
 }

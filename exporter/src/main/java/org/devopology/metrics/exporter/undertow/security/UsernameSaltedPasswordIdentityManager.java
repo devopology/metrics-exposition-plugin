@@ -22,7 +22,7 @@ import io.undertow.security.idm.IdentityManager;
 import io.undertow.security.idm.PasswordCredential;
 import org.devopology.common.logger.Logger;
 import org.devopology.common.logger.LoggerFactory;
-import org.devopology.common.password.EncryptedPassword;
+import org.devopology.common.password.HashedPassword;
 import org.devopology.common.precondition.Precondition;
 
 import java.security.Principal;
@@ -39,7 +39,7 @@ public class UsernameSaltedPasswordIdentityManager implements IdentityManager {
     private static final Set<String> ROLES = new HashSet<>();
 
     private String username;
-    private EncryptedPassword encryptedPassword;
+    private HashedPassword hashedPassword;
 
     /**
      * Constructor
@@ -54,7 +54,7 @@ public class UsernameSaltedPasswordIdentityManager implements IdentityManager {
         Precondition.notEmpty(encryptedPassword, "encryptedPassword is empty");
 
         this.username = username.trim();
-        this.encryptedPassword = new EncryptedPassword(encryptedPassword);
+        this.hashedPassword = new HashedPassword(encryptedPassword);
     }
 
     /**
@@ -86,9 +86,9 @@ public class UsernameSaltedPasswordIdentityManager implements IdentityManager {
             if (passwordCharacters != null) {
                 String password = new String(passwordCharacters).trim();
                 if (password.length() > 0) {
-                    String salt = this.encryptedPassword.getSalt();
-                    EncryptedPassword encryptedPassword = new EncryptedPassword(salt, password);
-                    if (this.encryptedPassword.equals(encryptedPassword)) {
+                    String salt = this.hashedPassword.getSalt();
+                    HashedPassword hashedPassword = new HashedPassword(salt, password);
+                    if (this.hashedPassword.equals(hashedPassword)) {
                         return new SimpleAccount(username, ROLES);
                     }
                 }
@@ -109,6 +109,9 @@ public class UsernameSaltedPasswordIdentityManager implements IdentityManager {
         return null;
     }
 
+    /**
+     * Class to implement a SimpleAccount
+     */
     private class SimpleAccount implements Account {
 
         private Principal principal;
@@ -116,7 +119,7 @@ public class UsernameSaltedPasswordIdentityManager implements IdentityManager {
 
         public SimpleAccount(String username, Set<String> rolesSet) {
             principal = new SimplePrincipal(username);
-            rolesSet = new HashSet<>();
+            this.rolesSet = rolesSet;
         }
 
         @Override
@@ -130,6 +133,9 @@ public class UsernameSaltedPasswordIdentityManager implements IdentityManager {
         }
     }
 
+    /**
+     * Class to implement a SimplePrincipal
+     */
     private class SimplePrincipal implements Principal {
 
         private String username;

@@ -41,6 +41,18 @@ public class Precondition {
         return string;
     }
 
+    public static void inRange(short value, short min, short max, String message) {
+        if ((value < min) || (value > max)) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
+    public static void inRange(int value, int min, int max, String message) {
+        if ((value < min) || (value > max)) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
     public static void inRange(long value, long min, long max, String message) {
         if ((value < min) || (value > max)) {
             throw new IllegalArgumentException(message);

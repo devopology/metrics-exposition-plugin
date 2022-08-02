@@ -17,14 +17,14 @@
 package org.devopology.metrics.exporter.undertow.handler;
 
 /**
- * Class to handle a "/-/healthy" request
+ * Class to handle a not found error
  */
-public class HealthyHttpHandler extends StaticContentHttpHandler {
+public class NotFoundHttpHandler extends StaticContentHttpHandler {
 
     /**
      * Constructor
      */
-    public HealthyHttpHandler() {
-        super(200, "text/plain", "Exporter is healthy.");
+    public NotFoundHttpHandler() {
+        super(404, "text/plain", "404 NOT FOUND");
     }
 }

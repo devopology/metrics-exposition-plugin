@@ -2,16 +2,18 @@
 
 Project to expose JMX and / or Prometheus metrics in a Prometheus or OpenMetrics format via HTTP/HTTPS.
 
+Can be used as either a Java agent (`-javaagnet`) or as a standalone application (EXPIREMENTAL) to remotely collect JMX metriccs.
+
 ## Features
 
 - 100% pure Java compatibility
   - [https://www.oracle.com/java/technologies/faq-sun-packages.html](https://www.oracle.com/java/technologies/faq-sun-packages.html)
 - HTTP/2 support
 - SSL/TLS support
-  - keystore password configuration is in an obfuscated format (no clear-text)
+  - obfuscated keystore password configuration (no clear-text)
 - HTTP BASIC authentication support
   - single user with a username / password
-  - user's password configuration is in an encrypted format (no clear-text)
+  - hashed user password configuration (no clear-text)
 - server side metric caching support
   - server controlled collection interval
 - fine-grained HotSport metrics configuration
@@ -29,12 +31,17 @@ Project to expose JMX and / or Prometheus metrics in a Prometheus or OpenMetrics
 - no runtime configuration reloading
 - needs more testing
 
+## Supported modes
+
+### Java agent
+### standalone JMX exporter
+
 ## Potential future features
 
 - runtime configuration reloading
 - pluggable authentication via an external jar
 - support more Undertow configuration values
-- better BASIC authentication password encryption format
+- better BASIC authentication password hashing format
 
 ## Typical Linux installation
 
@@ -116,9 +123,9 @@ __NOTES:__
 
 ### BASIC authentication configuration
 
-The password required for BASIC authentication is in an encrypted salted format.
+The password required for BASIC authentication is in a salted hashed format.
 
-Use the BASH script `./generate-salted-password.sh` to generate a salted password / configuration value
+Use the BASH script `./generate-hasheed-password.sh` to generate a salted hashed password (configuration value)
 
 __NOTES__
 
@@ -128,7 +135,7 @@ __NOTES__
 
 The password required for the keystore is in an obfuscated format.
 
-Use the BASH script `./generate-obfuscated-password.sh` to generated an obfuscated password / configuration value
+Use the BASH script `./generate-obfuscated-password.sh` to generate an obfuscated password (configuration value)
 
 ## Build
 

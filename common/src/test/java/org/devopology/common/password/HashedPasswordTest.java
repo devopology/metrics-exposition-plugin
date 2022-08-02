@@ -24,7 +24,7 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class EncryptedPasswordTest {
+public class HashedPasswordTest {
 
     private static final Random RANDOM = new SecureRandom();
 
@@ -34,17 +34,17 @@ public class EncryptedPasswordTest {
         String password = "password";
         String ePassword = "SHA512:" + salt + ":" + SHA.sha512Hash(salt + ":" + password);
 
-        EncryptedPassword encryptedPassword = new EncryptedPassword(salt, password);
+        HashedPassword hashedPassword = new HashedPassword(salt, password);
 
-        assertEquals(salt, encryptedPassword.getSalt());
-        assertEquals(ePassword, encryptedPassword.getEncryptedPassword());
+        assertEquals(salt, hashedPassword.getSalt());
+        assertEquals(ePassword, hashedPassword.getHashedPassword());
 
-        EncryptedPassword encryptedPassword2 = new EncryptedPassword(encryptedPassword.getEncryptedPassword());
+        HashedPassword hashedPassword2 = new HashedPassword(hashedPassword.getHashedPassword());
 
-        assertEquals(ePassword, encryptedPassword2.getEncryptedPassword());
+        assertEquals(ePassword, hashedPassword2.getHashedPassword());
 
-        assertEquals(encryptedPassword.getSalt(), encryptedPassword2.getSalt());
-        assertEquals(encryptedPassword.getEncryptedPassword(), encryptedPassword2.getEncryptedPassword());
+        assertEquals(hashedPassword.getSalt(), hashedPassword2.getSalt());
+        assertEquals(hashedPassword.getHashedPassword(), hashedPassword2.getHashedPassword());
     }
 
     private String randomString(int length) {

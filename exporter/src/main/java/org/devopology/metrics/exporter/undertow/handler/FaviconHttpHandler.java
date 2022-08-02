@@ -16,19 +16,15 @@
 
 package org.devopology.metrics.exporter.undertow.handler;
 
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.Headers;
-
 /**
  * Class to handle a "/favicon.ico" request
  */
-public class FaviconHttpHandler implements HttpHandler {
+public class FaviconHttpHandler extends StaticContentHttpHandler {
 
-    @Override
-    public void handleRequest(HttpServerExchange httpServerExchange) throws Exception {
-        httpServerExchange.setStatusCode(404);
-        httpServerExchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
-        httpServerExchange.getResponseSender().send("404 NOT FOUND");
+    /**
+     * Constructor
+     */
+    public FaviconHttpHandler() {
+        super(404, "text/plain", "404 NOT FOUND");
     }
 }

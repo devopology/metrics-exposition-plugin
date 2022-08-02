@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Class to handle all other requests not handled
+ * Class to handle a metrics request
  */
 public class MetricsHttpHandler implements HttpHandler {
 
@@ -38,6 +38,12 @@ public class MetricsHttpHandler implements HttpHandler {
     private Long cacheMilliseconds;
     private Map<String, String> responseMap;
 
+    /**
+     * Constructor
+     *
+     * @param isCachingEnabled
+     * @param cacheMilliseconds
+     */
     public MetricsHttpHandler(Boolean isCachingEnabled, Long cacheMilliseconds) {
         Precondition.notNull(isCachingEnabled, "isCachingEnabled is null");
 
@@ -54,6 +60,12 @@ public class MetricsHttpHandler implements HttpHandler {
         }
     }
 
+    /**
+     * Method to handle the HttpServerExchange
+     *
+     * @param httpServerExchange
+     * @throws Exception
+     */
     @Override
     public void handleRequest(HttpServerExchange httpServerExchange) throws Exception {
         HeaderValues headerValues = httpServerExchange.getRequestHeaders().get(Headers.ACCEPT);
