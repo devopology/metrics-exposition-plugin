@@ -43,6 +43,10 @@ Can be used as either a Java agent (`-javaagnet`) or as a standalone application
 - support more Undertow configuration values
 - better BASIC authentication password hashing format
 
+## FAQ
+
+  - [https://github.com/devopology/metrics-exporter/FAQ.md](https://github.com/devopology/metrics-exporter/FAQ.md)
+
 ## Typical Linux installation
 
 There are two package formats depending on whether you want to use unzip or tar
