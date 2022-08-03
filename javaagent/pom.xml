@@ -6,7 +6,7 @@
     <parent>
         <artifactId>metrics-exporter-parent</artifactId>
         <groupId>org.devopology</groupId>
-        <version>3.0.0</version>
+        <version>3.0.1-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>org.devopology</groupId>
             <artifactId>common</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

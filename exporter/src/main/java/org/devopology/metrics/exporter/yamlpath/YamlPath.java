@@ -22,6 +22,7 @@ import com.jayway.jsonpath.JsonPath;
 import org.devopology.common.precondition.Precondition;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
+import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.Tag;
@@ -105,8 +106,7 @@ public class YamlPath {
         };
 
         // Create a Yaml object that loads values (String, Integer, Boolean, timestamp) as Strings
-        Yaml yaml = new Yaml(
-                new Constructor(), new Representer(), new DumperOptions(), new LoaderOptions(), resolver);
+        Yaml yaml = new Yaml(new Constructor(), new Representer(), new DumperOptions(), new LoaderOptions(), resolver);
 
         // Load the YAML file
         Map<String, Object> yamlMap = yaml.load(reader);
